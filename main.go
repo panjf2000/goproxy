@@ -11,8 +11,8 @@ func main() {
 	proxyHandler.Port = "80"
 	http.Handle("/", &proxyHandler)
 	err := http.ListenAndServe(":8888", &proxyHandler)
-	select {}
 	if err != nil {
 		log.Fatalln("ListenAndServe occur a error: ", err)
 	}
+	select {} //block the main process
 }

@@ -19,7 +19,7 @@ func (p *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		protocol = "https://"
 	}
 
-	remote, err := url.Parse(protocol + r.Host + ":" + p.Port)
+	remote, err := url.Parse(protocol + r.Host[:strings.Index(r.Host, ":") + 1] + p.Port)
 	if err != nil {
 		panic(err)
 	}
