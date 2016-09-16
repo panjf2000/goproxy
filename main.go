@@ -1,7 +1,6 @@
-package goproxy
+package main
 
 import (
-	"fmt"
 	"net/http"
 	"github.com/panjf2000/goproxy/handlers"
 	"log"
