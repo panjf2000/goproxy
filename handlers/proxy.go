@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -25,20 +24,6 @@ func (p *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	proxy := httputil.NewSingleHostReverseProxy(remote)
-	proxy.ServeHTTP(w, r)
+	go proxy.ServeHTTP(w, r)
 }
 
-//func (p *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-//	protocol := r.Proto
-//	portIndex := strings.Index(host, ":")
-//	host := r.Host[:portIndex]
-//	port := p.Port
-//	method := r.Method
-//	body := r.Body
-//	header := r.Header
-//	uri := r.RequestURI
-//	setURL := fmt.Sprintf("%s://%s:%s%s", protocol, host, port, uri)
-//	client := &http.Client{}
-//
-//
-//}
