@@ -26,4 +26,3 @@ func (p *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	proxy := httputil.NewSingleHostReverseProxy(remote)
 	go proxy.ServeHTTP(w, r)
 }
-

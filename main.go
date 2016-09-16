@@ -1,9 +1,9 @@
 package main
 
 import (
-	"net/http"
 	"github.com/panjf2000/goproxy/handlers"
 	"log"
+	"net/http"
 )
 
 func main() {
@@ -11,8 +11,7 @@ func main() {
 	proxyHandler.Port = "80"
 	http.Handle("/", &proxyHandler)
 	err := http.ListenAndServe(":8888", &proxyHandler)
-	select {
-	}
+	select {}
 	if err != nil {
 		log.Fatalln("ListenAndServe occur a error: ", err)
 	}
