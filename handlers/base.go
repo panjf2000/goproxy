@@ -5,7 +5,8 @@ import (
 )
 
 type BaseHandler struct {
-	Port string
+	Protocol string
+	Host     []string
 }
 
 func (p *BaseHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"math/rand"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -17,9 +18,12 @@ func (p *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	protocol := "http://"
 	if httpsProto == 1 && httpProto == 0 {
 		protocol = "https://"
+		p.Protocol = protocol
 	}
-
-	remote, err := url.Parse(protocol + r.Host[:strings.Index(r.Host, ":") + 1] + p.Port)
+	// 随机选取一个负载均衡的服务器
+	index := rand.Intn(len(p.Host))
+	proxyHost := p.Host[index]
+	remote, err := url.Parse(p.Protocol + proxyHost)
 	if err != nil {
 		panic(err)
 	}
