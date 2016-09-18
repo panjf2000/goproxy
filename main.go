@@ -64,7 +64,7 @@ func main() {
 		switch val {
 		case "hash":
 			proxyHandler.Mode = 0
-		case "rand":
+		case "random":
 			proxyHandler.Mode = 1
 
 		}
