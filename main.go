@@ -26,7 +26,7 @@ func readConf(path string) map[string]string {
 		if c == io.EOF {
 			break
 		}
-		if strings.HasPrefix(lineString, "#") {
+		if 0 == len(lineString) || lineString == "\r\n" || strings.HasPrefix(lineString, "#") {
 			continue
 		}
 		confKey := strings.Split(lineString, "=")[0]

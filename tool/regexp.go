@@ -45,7 +45,7 @@ const (
 	// 匹配域名
 	domainPattern = `[a-zA-Z0-9][a-zA-Z0-9_-]{0,62}(\.[a-zA-Z0-9][a-zA-Z0-9_-]{0,62})*(\.[a-zA-Z][a-zA-Z0-9]{0,10}){1}`
 
-	domainOrIP = "(" + ipPattern + "|(" + domainPattern + "))" + // IP或域名
+	domainOrIP = "(" + ip4Pattern + "|(" + domainPattern + "))" + // IP或域名
 		`(:\d{1,4})?` // 端口
 
 	// 匹配URL
@@ -71,7 +71,7 @@ var (
 )
 
 func regexpCompile(str string) *regexp.Regexp {
-	return regexp.MustCompile("^" + str + "$")
+	return regexp.MustCompile(str)
 }
 
 // 判断val是否能正确匹配exp中的正则表达式。
