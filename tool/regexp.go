@@ -1,4 +1,4 @@
-package reg
+package tool
 
 import (
 	"regexp"

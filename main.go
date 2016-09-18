@@ -41,15 +41,46 @@ func readConf(path string) map[string]string {
 
 func main() {
 	var proxyHandler handlers.ProxyHandler
+
 	// 读取配置文件
 	var confMap map[string]string = readConf("conf/proxy.conf")
-	proxyHandler.Protocol = confMap["default_protocol"]
+	if val, ok := confMap["default_protocol"]; ok {
+		proxyHandler.Protocol = val
+	} else {
+		proxyHandler.Protocol = "https://"
+	}
+
 	// 利用正则表达式提取出配置文件中的待转发服务器，目前支持ip和域名
-	var rx *regexp.Regexp = reg.DomainOrIP
-	proxyHandler.Host = rx.FindAllString(confMap["host_list"], -1)
+	if val, ok := confMap["host_list"]; ok {
+		var rx *regexp.Regexp = tool.DomainOrIP
+		proxyHandler.Host = rx.FindAllString(val, -1)
+
+	} else {
+		proxyHandler.Host = []string{"127.0.0.1:80"}
+	}
+
+	// 选择负载策略，目前支持随机和IP Hash两种模式
+	if val, ok := confMap["mode"]; ok {
+		switch val {
+		case "hash":
+			proxyHandler.Mode = 0
+		case "rand":
+			proxyHandler.Mode = 1
+
+		}
+	} else {
+		proxyHandler.Mode = 0
+	}
+	var listen string
+	if val, ok := confMap["listen"]; ok {
+		listen = ":" + val
+	} else {
+		listen = ":8080"
+	}
+
 	// 启动http server，监听预设的端口,并在后台进行转发
 	http.Handle("/", &proxyHandler)
-	if err := http.ListenAndServe(":"+confMap["listen"], &proxyHandler); err != nil {
+	if err := http.ListenAndServe(listen, &proxyHandler); err != nil {
 		log.Fatalln("ListenAndServe occur a error: ", err)
 	}
 	select {} //利用select关键字的特性，阻塞主进程，使其成为守护进程
