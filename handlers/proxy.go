@@ -1,13 +1,13 @@
 package handlers
 
 import (
+	"github.com/panjf2000/goproxy/tool"
 	"math/rand"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"strings"
-	"github.com/panjf2000/goproxy/tool"
-	"net"
 )
 
 type ProxyHandler struct {
