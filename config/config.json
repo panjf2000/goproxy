@@ -1,0 +1,19 @@
+{
+  "port": ":8080",
+  "reverse": true,
+  "proxy_pass": [
+    "127.0.0.1:80"
+  ],
+  "mode":0,
+  "auth": false,
+  "cache": true,
+  "redis_host": "127.0.0.1:6379",
+  "cache_timeout": 60,
+  "log": 1,
+  "admin": {
+    "Admin": "root"
+  },
+  "user": {
+    "agent": "proxy"
+  }
+}
