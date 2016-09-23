@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/base64"
 	"errors"
-	"github.com/panjf2000/goproxy/tool"
+	_ "github.com/panjf2000/goproxy/tool"
 	"net/http"
 	"strings"
 )

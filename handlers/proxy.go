@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"bufio"
 	"fmt"
+	"github.com/Sirupsen/logrus"
 	"github.com/panjf2000/goproxy/cache"
 	"io"
 	"net"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -13,6 +16,34 @@ type ProxyServer struct {
 	// User records user's name
 	Travel  *http.Transport
 	Browser string
+}
+
+var log *logrus.Logger
+
+func init() {
+	var filename string = "logs/proxy.log"
+	log = logrus.New()
+	// Log as JSON instead of the default ASCII formatter.
+	log.Formatter = &logrus.JSONFormatter{}
+
+	// Output to stderr instead of stdout, could also be a file.
+	if cache.CheckFileIsExist(filename) {
+		f, err := os.OpenFile(filename, os.O_RDWR, 0666)
+		if err != nil {
+			return
+		}
+		log.Out = bufio.NewWriter(f)
+	} else {
+		f, err := os.Create(filename)
+		if err != nil {
+			return
+		}
+		log.Out = bufio.NewWriter(f)
+	}
+
+	// Only log the warning severity or above.
+	log.Level = logrus.DebugLevel
+
 }
 
 // NewProxyServer returns a new proxyserver.
@@ -76,10 +107,16 @@ func (goproxy *ProxyServer) HttpHandler(rw http.ResponseWriter, req *http.Reques
 
 	nr, err := io.Copy(rw, resp.Body)
 	if err != nil && err != io.EOF {
-		//log.Error("%v got an error when copy remote response to client.%v\n", goproxy.Browser, err)
+		log.WithFields(logrus.Fields{
+			"client": goproxy.Browser,
+			"error":  err,
+		}).Error("occur an error when copying remote response to this client")
 		return
 	}
-	//log.Info("%v Copied %v bytes from %v.\n", goproxy.Browser, nr, req.URL.Host)
+	log.WithFields(logrus.Fields{
+		"response bytes": nr,
+		"request url":    req.URL.Host,
+	}).Info("response has been copied successfully!")
 }
 
 var HTTP_200 = []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
@@ -119,7 +156,17 @@ func copyRemoteToClient(User string, Remote, Client net.Conn) {
 	nr, err := io.Copy(Remote, Client)
 	if err != nil && err != io.EOF {
 		//log.Error("%v got an error when handles CONNECT %v\n", User, err)
+		log.WithFields(logrus.Fields{
+			"client": User,
+			"error":  err,
+		}).Error("occur an error when handling CONNECT Method")
 		return
 	}
 	//log.Info("%v transport %v bytes betwwen %v and %v.\n", User, nr, Remote.RemoteAddr(), Client.RemoteAddr())
+	log.WithFields(logrus.Fields{
+		"user":           User,
+		"nr":             nr,
+		"remote_address": Remote.RemoteAddr(),
+		"client_address": Client.RemoteAddr(),
+	}).Info("transport the bytes between client and remote!")
 }

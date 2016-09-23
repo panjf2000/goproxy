@@ -2,6 +2,7 @@ package cache
 
 import (
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -24,15 +25,10 @@ func IsCache(resp *http.Response) bool {
 	}
 	return true
 }
-
-// //CheckCaches evey certian minutes check whether cache is out of date, if yes release it.
-// func CheckCaches() {
-//     for {
-//         time.Sleep(time.Duration(cnfg.CacheTimeout) * time.Minute)
-//         for key, Cache := range Caches {
-//             if Cache != nil && Cache.Verify() == false {
-//                 Caches.DeleteByCheckSum(key)
-//             }
-//         }
-//     }
-// }
+func CheckFileIsExist(filename string) bool {
+	var exist = true
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		exist = false
+	}
+	return exist
+}

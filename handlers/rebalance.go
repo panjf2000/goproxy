@@ -20,18 +20,19 @@ func (goproxy *ProxyServer) ReverseHandler(req *http.Request) {
 //处理反向代理请求
 func (goproxy *ProxyServer) reverseHandler(req *http.Request) {
 	var proxyHost string
-	memcacheServers := conf.ProxyPass
+	var memcacheServers []string
+	for _, val := range conf.ProxyPass {
+		if tool.IsHost(val) {
+			memcacheServers = append(memcacheServers, val)
+		}
+	}
 	switch conf.Mode {
 	case 0:
 		// 根据客户端的IP算出一个HASH值，将请求分配到集群中的某一台服务器上
 		ring := tool.New(memcacheServers)
 		if clientIP, _, err := net.SplitHostPort(req.RemoteAddr); err == nil {
 			server, _ := ring.GetNode(clientIP)
-			if tool.IsHost(server) {
-				proxyHost = server
-			} else {
-				fallthrough
-			}
+			proxyHost = server
 		} else {
 			proxyHost = memcacheServers[rand.Intn(len(memcacheServers))]
 		}
