@@ -15,11 +15,11 @@ func MD5Uri(uri string) string {
     return fmt.Sprintf("%x", md5.Sum([]byte(uri)))
 }
 
-type CacheHolder struct {
+type CachePool struct {
     pool *redis.Pool
 }
 
-func NewCacheHolder(address string, password string) *CacheHolder {
+func NewCachePool(address string, password string) *CachePool{
     pool := &redis.Pool{
         MaxIdle:     5,
         IdleTimeout: 1 * time.Hour,
@@ -48,13 +48,13 @@ func NewCacheHolder(address string, password string) *CacheHolder {
         panic("Fail to connect to redis server")
     }
     log.Println("yes to redis")
-    return &CacheHolder{
+    return &CachePool{
         pool: pool,
     }
 
 }
 
-func (c *CacheHolder) Get(uri string) api.Cache {
+func (c *CachePool) Get(uri string) api.Cache {
     log.Println("get cahche of ", uri)
     if cache := c.get(MD5Uri(uri)); cache != nil {
         //log.Println(*cache)
@@ -63,7 +63,7 @@ func (c *CacheHolder) Get(uri string) api.Cache {
     return nil
 }
 
-func (c *CacheHolder) get(md5Uri string) *Cache {
+func (c *CachePool) get(md5Uri string) *Cache {
     conn := c.pool.Get()
     defer conn.Close()
 
@@ -78,11 +78,11 @@ func (c *CacheHolder) get(md5Uri string) *Cache {
     return cache
 }
 
-func (c *CacheHolder) Delete(uri string) {
+func (c *CachePool) Delete(uri string) {
     c.delete(MD5Uri(uri))
 }
 
-func (c *CacheHolder) delete(md5Uri string) {
+func (c *CachePool) delete(md5Uri string) {
     conn := c.pool.Get()
     defer conn.Close()
 
@@ -95,7 +95,7 @@ func (c *CacheHolder) delete(md5Uri string) {
     return
 }
 
-func (c *CacheHolder) CheckAndStore(uri string, resp *http.Response) {
+func (c *CachePool) CheckAndStore(uri string, resp *http.Response) {
     if !IsCache(resp) {
         return
     }
@@ -130,6 +130,6 @@ func (c *CacheHolder) CheckAndStore(uri string, resp *http.Response) {
 
 }
 
-func (c *CacheHolder) Clear(d time.Duration) {
+func (c *CachePool) Clear(d time.Duration) {
 
 }

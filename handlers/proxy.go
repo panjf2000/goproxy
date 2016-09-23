@@ -1,8 +1,3 @@
-// Package proxy implements a http proxy.
-//
-// Support GET, POST, CONNECT method and so on.
-// Support proxy auth and web management.
-// Support web cache.
 package handlers
 
 import (
@@ -23,7 +18,7 @@ type ProxyServer struct {
 // NewProxyServer returns a new proxyserver.
 func NewProxyServer() *http.Server {
 	if conf.Cache {
-		RegisterCacheHolder(cache.NewCacheHolder(conf.RedisHost, conf.RedisPasswd))
+		RegisterCacheHolder(cache.NewCachePool(conf.RedisHost, conf.RedisPasswd))
 	}
 
 	return &http.Server{

@@ -8,10 +8,10 @@ import (
 	"github.com/panjf2000/goproxy/interface"
 )
 
-var cacheHolder api.CacheHolder
+var cachePool api.CachePool
 
-func RegisterCacheHolder(c api.CacheHolder) {
-	cacheHolder = c
+func RegisterCacheHolder(c api.CachePool) {
+	cachePool = c
 }
 
 //CacheHandler handles "Get" request
@@ -19,7 +19,7 @@ func (goproxy *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Reque
 
 	var uri = req.RequestURI
 
-	c := cacheHolder.Get(uri)
+	c := cachePool.Get(uri)
 
 	if c != nil {
 		if c.Verify() {
@@ -28,7 +28,7 @@ func (goproxy *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Reque
 			return
 		} else {
 			//log.Debug("Delete cache of %s", uri)
-			cacheHolder.Delete(uri)
+			cachePool.Delete(uri)
 		}
 	}
 
@@ -45,7 +45,7 @@ func (goproxy *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Reque
 	CopyResponse(cresp, resp)
 
 	//log.Debug("Check and store cache of %s", uri)
-	go cacheHolder.CheckAndStore(uri, cresp)
+	go cachePool.CheckAndStore(uri, cresp)
 
 	ClearHeaders(rw.Header())
 	CopyHeaders(rw.Header(), resp.Header)

@@ -1,4 +1,3 @@
-//Package cache handlers http web cache.
 package cache
 
 import (

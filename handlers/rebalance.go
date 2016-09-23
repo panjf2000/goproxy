@@ -27,7 +27,11 @@ func (goproxy *ProxyServer) reverseHandler(req *http.Request) {
 		ring := tool.New(memcacheServers)
 		if clientIP, _, err := net.SplitHostPort(req.RemoteAddr); err == nil {
 			server, _ := ring.GetNode(clientIP)
-			proxyHost = server
+			if tool.IsHost(server){
+				proxyHost = server
+			}else {
+				fallthrough
+			}
 		} else {
 			proxyHost = memcacheServers[rand.Intn(len(memcacheServers))]
 		}
