@@ -18,13 +18,13 @@ type ProxyServer struct {
 	Browser string
 }
 
-var log *logrus.Logger
+var proxyLog *logrus.Logger
 
 func init() {
 	var filename string = "logs/proxy.log"
-	log = logrus.New()
+	proxyLog = logrus.New()
 	// Log as JSON instead of the default ASCII formatter.
-	log.Formatter = &logrus.JSONFormatter{}
+	proxyLog.Formatter = &logrus.JSONFormatter{}
 
 	// Output to stderr instead of stdout, could also be a file.
 	if cache.CheckFileIsExist(filename) {
@@ -32,17 +32,17 @@ func init() {
 		if err != nil {
 			return
 		}
-		log.Out = bufio.NewWriter(f)
+		proxyLog.Out = bufio.NewWriter(f)
 	} else {
 		f, err := os.Create(filename)
 		if err != nil {
 			return
 		}
-		log.Out = bufio.NewWriter(f)
+		proxyLog.Out = bufio.NewWriter(f)
 	}
 
 	// Only log the warning severity or above.
-	log.Level = logrus.DebugLevel
+	proxyLog.Level = logrus.DebugLevel
 
 }
 
@@ -107,13 +107,13 @@ func (goproxy *ProxyServer) HttpHandler(rw http.ResponseWriter, req *http.Reques
 
 	nr, err := io.Copy(rw, resp.Body)
 	if err != nil && err != io.EOF {
-		log.WithFields(logrus.Fields{
+		proxyLog.WithFields(logrus.Fields{
 			"client": goproxy.Browser,
 			"error":  err,
 		}).Error("occur an error when copying remote response to this client")
 		return
 	}
-	log.WithFields(logrus.Fields{
+	proxyLog.WithFields(logrus.Fields{
 		"response bytes": nr,
 		"request url":    req.URL.Host,
 	}).Info("response has been copied successfully!")
@@ -156,14 +156,14 @@ func copyRemoteToClient(User string, Remote, Client net.Conn) {
 	nr, err := io.Copy(Remote, Client)
 	if err != nil && err != io.EOF {
 		//log.Error("%v got an error when handles CONNECT %v\n", User, err)
-		log.WithFields(logrus.Fields{
+		proxyLog.WithFields(logrus.Fields{
 			"client": User,
 			"error":  err,
 		}).Error("occur an error when handling CONNECT Method")
 		return
 	}
 	//log.Info("%v transport %v bytes betwwen %v and %v.\n", User, nr, Remote.RemoteAddr(), Client.RemoteAddr())
-	log.WithFields(logrus.Fields{
+	proxyLog.WithFields(logrus.Fields{
 		"user":           User,
 		"nr":             nr,
 		"remote_address": Remote.RemoteAddr(),
