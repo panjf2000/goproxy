@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"bytes"
+	"github.com/panjf2000/goproxy/interface"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"github.com/panjf2000/goproxy/interface"
 )
 
 var cachePool api.CachePool

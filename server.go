@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/panjf2000/goproxy/handlers"
 	log "github.com/Sirupsen/logrus"
+	"github.com/panjf2000/goproxy/handlers"
 	_ "net/http"
 )
 

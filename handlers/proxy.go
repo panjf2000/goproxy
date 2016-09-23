@@ -2,16 +2,16 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/panjf2000/goproxy/cache"
 	"io"
 	"net"
 	"net/http"
 	"time"
-	"github.com/panjf2000/goproxy/cache"
 )
 
 type ProxyServer struct {
 	// User records user's name
-	Travel *http.Transport
+	Travel  *http.Transport
 	Browser string
 }
 

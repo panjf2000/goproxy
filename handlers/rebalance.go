@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"net/http"
 	"github.com/panjf2000/goproxy/tool"
-	"net"
 	"math/rand"
+	"net"
+	"net/http"
 )
 
 //ReverseHandler handles request for reverse proxy.
@@ -27,9 +27,9 @@ func (goproxy *ProxyServer) reverseHandler(req *http.Request) {
 		ring := tool.New(memcacheServers)
 		if clientIP, _, err := net.SplitHostPort(req.RemoteAddr); err == nil {
 			server, _ := ring.GetNode(clientIP)
-			if tool.IsHost(server){
+			if tool.IsHost(server) {
 				proxyHost = server
-			}else {
+			} else {
 				fallthrough
 			}
 		} else {

@@ -3,9 +3,9 @@ package handlers
 import (
 	"encoding/base64"
 	"errors"
+	"github.com/panjf2000/goproxy/tool"
 	"net/http"
 	"strings"
-	"github.com/panjf2000/goproxy/tool"
 )
 
 var HTTP_407 = []byte("HTTP/1.1 407 Proxy Authorization Required\r\nProxy-Authenticate: Basic realm=\"Secure Proxys\"\r\n\r\n")
