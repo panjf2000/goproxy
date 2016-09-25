@@ -20,7 +20,7 @@ type Config struct {
 	ProxyPass []string `json:"proxy_pass"`
 
 	// 负载策略 1-IP HASH , 2-随机择取
-	Mode int
+	Mode int `json:"mode"`
 	// 认证标志
 	Auth bool `json:"auth"`
 
