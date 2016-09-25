@@ -4,9 +4,9 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
-	"github.com/garyburd/redigo/redis"
+	"github.com/mediocregopher/radix.v2/pool"
+	"github.com/mediocregopher/radix.v2/redis"
 	"github.com/panjf2000/goproxy/interface"
-	"log"
 	"net/http"
 	"time"
 )
@@ -16,46 +16,34 @@ func MD5Uri(uri string) string {
 }
 
 type CachePool struct {
-	pool *redis.Pool
+	pool *pool.Pool
 }
 
-func NewCachePool(address string, password string) *CachePool {
-	pool := &redis.Pool{
-		MaxIdle:     5,
-		IdleTimeout: 1 * time.Hour,
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", address)
-			if err != nil {
-				return nil, err
-			}
-
-			if password != "" {
-				if _, err = c.Do("AUTH", password); err != nil {
-					c.Close()
-					return nil, err
-				}
-			}
-
-			return c, nil
-		},
-	}
-
-	c := pool.Get()
-	defer c.Close()
-
-	_, err := c.Do("PING")
+func NewCachePool(address, password string, cap int) *CachePool {
+	p, err := pool.NewCustom("tcp", address, cap, func(network, addr string) (*redis.Client, error) {
+		client, err := redis.Dial(network, addr)
+		if err != nil {
+			return nil, err
+		}
+		if err = client.Cmd("AUTH", password).Err; err != nil {
+			client.Close()
+			return nil, err
+		}
+		return client, nil
+	})
 	if err != nil {
-		panic("Fail to connect to redis server")
+		panic(err)
 	}
-	log.Println("yes to redis")
-	return &CachePool{
-		pool: pool,
+	n := p.Avail()
+	if n == 0 {
+
 	}
+	return &CachePool{pool: p}
 
 }
 
 func (c *CachePool) Get(uri string) api.Cache {
-	log.Println("get cahche of ", uri)
+	//log.Println("get cahche of ", uri)
 	if cache := c.get(MD5Uri(uri)); cache != nil {
 		//log.Println(*cache)
 		return cache
@@ -64,15 +52,16 @@ func (c *CachePool) Get(uri string) api.Cache {
 }
 
 func (c *CachePool) get(md5Uri string) *Cache {
-	conn := c.pool.Get()
-	defer conn.Close()
+	conn, _ := c.pool.Get()
+	defer c.pool.Put(conn)
 
-	b, err := redis.Bytes(conn.Do("GET", md5Uri))
+	//b, err := redis.Bytes(conn.Do("GET", md5Uri))
+	b, err := conn.Cmd("GET", md5Uri).Bytes()
 	if err != nil || len(b) == 0 {
-		log.Println(err)
+		//log.Println(err)
 		return nil
 	}
-	log.Println(string(b))
+	//log.Println(string(b))
 	cache := new(Cache)
 	json.Unmarshal(b, &cache)
 	return cache
@@ -83,15 +72,12 @@ func (c *CachePool) Delete(uri string) {
 }
 
 func (c *CachePool) delete(md5Uri string) {
-	conn := c.pool.Get()
-	defer conn.Close()
+	conn, _ := c.pool.Get()
+	defer c.pool.Put(conn)
 
-	_, err := conn.Do("DEL", md5Uri)
-
-	if err != nil {
+	if err := conn.Cmd("DEL", md5Uri).Err; err != nil {
 		return
 	}
-
 	return
 }
 
@@ -106,27 +92,27 @@ func (c *CachePool) CheckAndStore(uri string, resp *http.Response) {
 		return
 	}
 
-	log.Println("store cache ", uri)
+	//log.Println("store cache ", uri)
 
 	md5Uri := MD5Uri(uri)
 	b, err := json.Marshal(cache)
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
 		return
 	}
 
-	conn := c.pool.Get()
-	defer conn.Close()
+	conn, _ := c.pool.Get()
+	defer c.pool.Put(conn)
 
-	conn.Send("MULTI")
-	conn.Send("SET", md5Uri, b)
-	conn.Send("EXPIRE", md5Uri, cache.maxAge)
-	_, err = conn.Do("EXEC")
+	err = conn.Cmd("MULTI").Err
+	//log.Println("successfully store cache ", uri)
+	conn.Cmd("SET", md5Uri, b)
+	conn.Cmd("EXPIRE", md5Uri, cache.maxAge)
+	err = conn.Cmd("EXEC").Err
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
 		return
 	}
-	log.Println("successfully store cache ", uri)
 
 }
 

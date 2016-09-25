@@ -13,7 +13,7 @@ import (
 )
 
 type ProxyServer struct {
-	// User records user's name
+	// Browser records user's name
 	Travel  *http.Transport
 	Browser string
 }
@@ -28,7 +28,7 @@ func init() {
 
 	// Output to stderr instead of stdout, could also be a file.
 	if cache.CheckFileIsExist(filename) {
-		f, err := os.OpenFile(filename, os.O_RDWR, 0666)
+		f, err := os.OpenFile(filename, os.O_APPEND, 0666)
 		if err != nil {
 			return
 		}
@@ -49,7 +49,7 @@ func init() {
 // NewProxyServer returns a new proxyserver.
 func NewProxyServer() *http.Server {
 	if conf.Cache {
-		RegisterCacheHolder(cache.NewCachePool(conf.RedisHost, conf.RedisPasswd))
+		RegisterCacheHolder(cache.NewCachePool(conf.RedisHost, conf.RedisPasswd, 10))
 	}
 
 	return &http.Server{

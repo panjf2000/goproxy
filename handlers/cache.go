@@ -23,7 +23,7 @@ func init() {
 
 	// Output to stderr instead of stdout, could also be a file.
 	if cache.CheckFileIsExist(filename) {
-		f, err := os.OpenFile(filename, os.O_RDWR, 0666)
+		f, err := os.OpenFile(filename, os.O_APPEND, 0666)
 		if err != nil {
 			return
 		}
