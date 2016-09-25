@@ -22,7 +22,7 @@ func initLog() {
 }
 
 func init() {
-	err := conf.GetConfig("conf/config.json")
+	err := conf.GetConfig("config/config.json")
 	initLog()
 	if err != nil {
 		logrus.Fatal(err)
