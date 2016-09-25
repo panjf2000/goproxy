@@ -41,7 +41,7 @@ func init() {
 
 }
 
-func RegisterCacheHolder(c api.CachePool) {
+func RegisterCachePool(c api.CachePool) {
 	cachePool = c
 }
 

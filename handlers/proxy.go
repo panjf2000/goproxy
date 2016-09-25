@@ -49,7 +49,7 @@ func init() {
 // NewProxyServer returns a new proxyserver.
 func NewProxyServer() *http.Server {
 	if conf.Cache {
-		RegisterCacheHolder(cache.NewCachePool(conf.RedisHost, conf.RedisPasswd, 10))
+		RegisterCachePool(cache.NewCachePool(conf.RedisHost, conf.RedisPasswd, 10))
 	}
 
 	return &http.Server{

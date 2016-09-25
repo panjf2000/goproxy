@@ -4,7 +4,7 @@
   "proxy_pass": [
     "127.0.0.1:80"
   ],
-  "mode":0,
+  "mode": 0,
   "auth": false,
   "cache": true,
   "redis_host": "127.0.0.1:6379",
