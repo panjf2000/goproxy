@@ -71,7 +71,7 @@ func (goproxy *ProxyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request)
 			fmt.Fprintf(rw, fmt.Sprintln(err))
 		}
 	}()
-	if goproxy.Auth(rw, req) {
+	if !goproxy.Auth(rw, req) {
 		return
 	}
 
