@@ -1,19 +1,36 @@
 # goproxy
-# 1.获取源码
+>goproxy是使用golang实现的一个基本的负载均衡服务器，支持缓存（使用redis）；反向代理，目前支持随机分发和IP HASH两种模式，另外，对转发的请求有较大的控制度，可以控制代理特定的请求，屏蔽特定的请求，甚至可以重写特定的请求。 另外，有时候项目需要用到第三方的服务并对返回的数据进行自定义修改，调用第三方的API，利用proxy server可以很容易的控制第三方API返回的数据并进行自定义修改。
+
+# 项目功能：
+
+## 1.反向代理、负载均衡，负载策略目前支持随机选取和IP HASH两种模式；
+- 支持GET/POST/PUT/DELETE这些Method，还有https的CONNECT方法
+- 支持账号登入与验证
+
+## 2.内容转发：
+- 可以控制代理特定的请求，屏蔽特定的请求，甚至可以重写特定的请求,
+- 控制第三方API返回的数据并进行自定义修改
+
+## 3.支持内容缓存和重校验，支持把response缓存在redis，定时刷新，加快请求响应速度。
+
+## 4.通过配置文件实现对项目的控制
+
+# 系统使用
+## 1.获取源码
 >* 通过github获取t本项目的[源码]，路径为：https://github.com/panjf2000/goproxy.git  
 >* 获取：git clone https://github.com/panjf2000/goproxy.git
 
-# 2.安装项目依赖的golang库：
+## 2.安装项目依赖的golang库：
 logrus（一个开源的高性能golang日志库）；
 radix（一个Redis 官方推荐的使用golang实现的redis client，轻量级、实现优雅）
 >logrus安装：go get github.com/Sirupsen/logrus  
 >radix安装：go get github.com/mediocregopher/radix.v2/…
 
-# 3.编译源码
+## 3.编译源码
 cd $GOPATH/src/
 go build
 
-# 4.运行
+## 4.运行
 先配置config.json配置文件，一个典型的例子如下：
 ```
 {
@@ -38,7 +55,7 @@ go build
 }
 ```
 
-## config释义：
+### config释义：
 - port：代理服务器的监听端口
 - reverse：设置反向代理，值为true或者false
 - proxy_pass：反向代理目标服务器地址列表，如[“127.0.0.1:80”,“127.0.0.1:8080”]
