@@ -5,7 +5,7 @@
 
 ## 1.反向代理、负载均衡，负载策略目前支持随机选取和IP HASH两种模式；
 - 支持GET/POST/PUT/DELETE这些Method，还有https的CONNECT方法
-- 支持账号登入与验证
+- 支持http authentication
 
 ## 2.内容转发：
 - 可以控制代理特定的请求，屏蔽特定的请求，甚至可以重写特定的请求,
@@ -13,11 +13,11 @@
 
 ## 3.支持内容缓存和重校验，支持把response缓存在redis，定时刷新，加快请求响应速度。
 
-## 4.通过配置文件实现对项目的控制
+## 4.通过config文件实现对server的配置
 
 # 系统使用
 ## 1.获取源码
->* 通过github获取t本项目的[源码]，路径为：https://github.com/panjf2000/goproxy.git  
+>* 通过github获取t本项目的[源码]，路径为：https://github.com/panjf2000/goproxy
 >* 获取：git clone https://github.com/panjf2000/goproxy.git
 
 ## 2.安装项目依赖的golang库：
@@ -64,9 +64,9 @@ go build
 - cache：是否开启缓存（缓存response），值为true或者false
 - redis_host：缓存模块的redis host
 - redis_passwd：redis密码
-- cache_timeout：缓存更新时间，单位分钟
+- cache_timeout：redis缓存response的刷新时间，以分钟为单位
 - log：设置打log的level,1时level为Debug，0时为info
-- user：代理服务器的验证用户
+- user：代理服务器的http authentication 用户
 
   
   
