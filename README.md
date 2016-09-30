@@ -37,19 +37,21 @@ go build
 }
 ```
 
-config释义：
-port：代理服务器的监听端口
-reverse：设置反向代理，值为true或者false
-proxy_pass：反向代理目标服务器地址列表，如[“127.0.0.1:80”,“127.0.0.1:8080”]
-mode：设置负载策略，即选择转发的服务器，目前支持两种模式：1.随机挑选一个服务器 2.IP HASH模式，根据client ip用hash ring择取服务器
-auth：开启代理认证，值为true或者false
-cache：是否开启缓存（缓存response），值为true或者false
-redis_host：缓存模块的redis host
-redis_passwd：redis密码
-cache_timeout：缓存更新时间，单位分钟
-log：设置打log的level,1时level为Debug，0时为info
-user：代理服务器的验证用户
+## config释义：
+- port：代理服务器的监听端口
+- reverse：设置反向代理，值为true或者false
+- proxy_pass：反向代理目标服务器地址列表，如[“127.0.0.1:80”,“127.0.0.1:8080”]
+- mode：设置负载策略，即选择转发的服务器，目前支持两种模式：1.随机挑选一个服务器 2.IP HASH模式，根据client ip用hash ring择取服务器
+- auth：开启代理认证，值为true或者false
+- cache：是否开启缓存（缓存response），值为true或者false
+- redis_host：缓存模块的redis host
+- redis_passwd：redis密码
+- cache_timeout：缓存更新时间，单位分钟
+- log：设置打log的level,1时level为Debug，0时为info
+- user：代理服务器的验证用户
 
+  
+  
 运行完go build后会生成一个执行文件，名字与项目名相同，可以直接运行：./goproxy
 运行组件后，proxy server监听配置文件中设置的port端口，然后直接访问该端口即可实现反向代理，将请求转发至proxy_pass参数中的服务器
 
