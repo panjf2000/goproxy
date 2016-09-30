@@ -1,6 +1,6 @@
 # goproxy
 # 1.获取源码
-通过svn checkout本项目的源码，源码路径为：http://tc-svn.tencent.com/components/goproxy_proj
+通过svn checkout本项目的源码，源码路径为：https://github.com/panjf2000/goproxy.git
 
 # 2.安装项目依赖的golang库：
 logrus（一个开源的高性能golang日志库）；
