@@ -1,6 +1,7 @@
 # goproxy
 # 1.获取源码
-通过svn checkout本项目的[源码]，路径为：https://github.com/panjf2000/goproxy.git
+>* 通过github获取t本项目的[源码]，路径为：https://github.com/panjf2000/goproxy.git  
+>* 获取：git clone https://github.com/panjf2000/goproxy.git
 
 # 2.安装项目依赖的golang库：
 logrus（一个开源的高性能golang日志库）；
