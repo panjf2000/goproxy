@@ -4,7 +4,7 @@
 
 # 2.安装项目依赖的golang库：
 logrus（一个开源的高性能golang日志库）；
-radix（一个Redis 官方推荐的使用golang实现的redis client，轻量级和实现优雅）
+radix（一个Redis 官方推荐的使用golang实现的redis client，轻量级、实现优雅）
 >logrus安装：go get github.com/Sirupsen/logrus  
 >radix安装：go get github.com/mediocregopher/radix.v2/…
 
