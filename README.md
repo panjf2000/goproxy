@@ -17,7 +17,7 @@
 
 # 系统使用
 ## 1.获取源码
->* 通过github获取t本项目的[源码]，路径为：https://github.com/panjf2000/goproxy
+>* 通过github获取项目的[源码](https://github.com/panjf2000/goproxy)，路径为：https://github.com/panjf2000/goproxy
 >* 获取：git clone https://github.com/panjf2000/goproxy.git
 
 ## 2.安装项目依赖的golang库：
