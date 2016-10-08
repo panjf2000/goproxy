@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"bufio"
+	_ "bufio"
 	"bytes"
 	"github.com/Sirupsen/logrus"
 	"github.com/panjf2000/goproxy/cache"
@@ -19,7 +19,7 @@ func init() {
 	var filename string = "logs/cache.log"
 	cacheLog = logrus.New()
 	// Log as JSON instead of the default ASCII formatter.
-	cacheLog.Formatter = &logrus.JSONFormatter{}
+	cacheLog.Formatter = &logrus.TextFormatter{}
 
 	// Output to stderr instead of stdout, could also be a file.
 	if cache.CheckFileIsExist(filename) {
@@ -27,13 +27,13 @@ func init() {
 		if err != nil {
 			return
 		}
-		cacheLog.Out = bufio.NewWriter(f)
+		cacheLog.Out = f
 	} else {
 		f, err := os.Create(filename)
 		if err != nil {
 			return
 		}
-		cacheLog.Out = bufio.NewWriter(f)
+		cacheLog.Out = f
 	}
 
 	// Only log the warning severity or above.
