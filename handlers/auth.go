@@ -47,7 +47,9 @@ func (goproxy *ProxyServer) Auth(rw http.ResponseWriter, req *http.Request) bool
 		//代理服务器登入认证
 		if goproxy.Browser, err = goproxy.auth(rw, req); err != nil {
 			authLog.Error("Fail to log in!")
-			//log.Debug("%v", err)
+			authLog.WithFields(logrus.Fields{
+				"error": err,
+			}).Error("Fail to log in!")
 			//goproxy.Browser = "Anonymous"
 			return false
 		} else {
@@ -74,7 +76,6 @@ func (goproxy *ProxyServer) auth(rw http.ResponseWriter, req *http.Request) (str
 	}
 	data, err := base64.StdEncoding.DecodeString(auth)
 	if err != nil {
-		//log.Debug("when decoding %v, got an error of %v", auth, err)
 		authLog.WithFields(logrus.Fields{
 			"auth":  auth,
 			"error": err,

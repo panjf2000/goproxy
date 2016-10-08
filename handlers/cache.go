@@ -54,11 +54,15 @@ func (goproxy *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Reque
 
 	if c != nil {
 		if c.Verify() {
-			//log.Debug("Get cache of %s", uri)
+			cacheLog.WithFields(logrus.Fields{
+				"request url":    uri,
+			}).Debug("Found cache!")
 			c.WriteTo(rw)
 			return
 		} else {
-			//log.Debug("Delete cache of %s", uri)
+			cacheLog.WithFields(logrus.Fields{
+				"request url":    uri,
+			}).Debug("Delete cache!")
 			cachePool.Delete(uri)
 		}
 	}
@@ -75,7 +79,9 @@ func (goproxy *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Reque
 	*cresp = *resp
 	CopyResponse(cresp, resp)
 
-	//log.Debug("Check and store cache of %s", uri)
+	cacheLog.WithFields(logrus.Fields{
+		"request url":    uri,
+	}).Debug("Check out this cache and then stores it if it is right!")
 	go cachePool.CheckAndStore(uri, cresp)
 
 	ClearHeaders(rw.Header())
@@ -85,14 +91,12 @@ func (goproxy *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Reque
 
 	nr, err := io.Copy(rw, resp.Body)
 	if err != nil && err != io.EOF {
-		//log.Error("%v got an error when copy remote response to client.%v\n", goproxy.Browser, err)
 		cacheLog.WithFields(logrus.Fields{
 			"client": goproxy.Browser,
 			"error":  err,
 		}).Error("occur an error when copying remote response to this client")
 		return
 	}
-	//log.Info("%v Copied %v bytes from %v.\n", goproxy.Browser, nr, req.URL.Host)
 	cacheLog.WithFields(logrus.Fields{
 		"response bytes": nr,
 		"request url":    req.URL.Host,
