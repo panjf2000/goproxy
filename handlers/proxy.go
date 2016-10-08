@@ -2,7 +2,6 @@ package handlers
 
 import (
 	_ "bufio"
-	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/panjf2000/goproxy/cache"
 	"io"
@@ -67,8 +66,9 @@ func (goproxy *ProxyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request)
 	defer func() {
 		if err := recover(); err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
-			//log.Debug("Panic: %v\n", err)
-			fmt.Fprintf(rw, fmt.Sprintln(err))
+			proxyLog.WithFields(logrus.Fields{
+				"panic": err,
+			}).Panic("Call a panic!")
 		}
 	}()
 	if !goproxy.Auth(rw, req) {
@@ -89,12 +89,18 @@ func (goproxy *ProxyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request)
 //HttpHandler handles http connections.
 //处理普通的http请求
 func (goproxy *ProxyServer) HttpHandler(rw http.ResponseWriter, req *http.Request) {
-	//log.Info("%v is sending request %v %v \n", goproxy.Browser, req.Method, req.URL.Host)
+	proxyLog.WithFields(logrus.Fields{
+		"request user":   goproxy.Browser,
+		"request method": req.Method,
+		"request url":    req.URL.Host,
+	}).Info("request's detail !")
 	RmProxyHeaders(req)
 
 	resp, err := goproxy.Travel.RoundTrip(req)
 	if err != nil {
-		//log.Error("%v", err)
+		proxyLog.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("occur an error!")
 		http.Error(rw, err.Error(), 500)
 		return
 	}
@@ -124,19 +130,28 @@ var HTTP_200 = []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
 // HttpsHandler handles any connection which need connect method.
 // 处理https连接，主要用于CONNECT方法
 func (goproxy *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Request) {
-	//log.Info("%v tried to connect to %v", goproxy.Browser, req.URL.Host)
+	proxyLog.WithFields(logrus.Fields{
+		"user": goproxy.Browser,
+		"host": req.URL.Host,
+	}).Info("http user tried to connect host!")
 
 	hj, _ := rw.(http.Hijacker)
 	Client, _, err := hj.Hijack() //获取客户端与代理服务器的tcp连接
 	if err != nil {
-		//log.Error("%v failed to get Tcp connection of \n", goproxy.Browser, req.RequestURI)
+		proxyLog.WithFields(logrus.Fields{
+			"user":        goproxy.Browser,
+			"request uri": req.RequestURI,
+		}).Error("http user failed to get tcp connection!")
 		http.Error(rw, "Failed", http.StatusBadRequest)
 		return
 	}
 
 	Remote, err := net.Dial("tcp", req.URL.Host) //建立服务端和代理服务器的tcp连接
 	if err != nil {
-		//log.Error("%v failed to connect %v\n", goproxy.Browser, req.RequestURI)
+		proxyLog.WithFields(logrus.Fields{
+			"user":        goproxy.Browser,
+			"request uri": req.RequestURI,
+		}).Error("http user failed to connect this uri!")
 		http.Error(rw, "Failed", http.StatusBadGateway)
 		return
 	}
@@ -155,14 +170,12 @@ func copyRemoteToClient(User string, Remote, Client net.Conn) {
 
 	nr, err := io.Copy(Remote, Client)
 	if err != nil && err != io.EOF {
-		//log.Error("%v got an error when handles CONNECT %v\n", User, err)
 		proxyLog.WithFields(logrus.Fields{
 			"client": User,
 			"error":  err,
 		}).Error("occur an error when handling CONNECT Method")
 		return
 	}
-	//log.Info("%v transport %v bytes betwwen %v and %v.\n", User, nr, Remote.RemoteAddr(), Client.RemoteAddr())
 	proxyLog.WithFields(logrus.Fields{
 		"user":           User,
 		"nr":             nr,
