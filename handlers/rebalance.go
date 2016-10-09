@@ -27,13 +27,13 @@ func (goproxy *ProxyServer) reverseHandler(req *http.Request) {
 	for _, val := range conf.ProxyPass {
 		if tool.IsHost(val) {
 			memcacheServers[val] = 1
-			append(serverNodes, val)
+			serverNodes = append(serverNodes, val)
 		}else if tool.IsWeightHost(val) {
 			hostPair := strings.Split(val, "^")
 			host := hostPair[0]
 			weight, _ := strconv.Atoi(hostPair[1])
 			memcacheServers[host] = weight
-			append(serverNodes, host)
+			serverNodes = append(serverNodes, host)
 		}else {
 
 		}
