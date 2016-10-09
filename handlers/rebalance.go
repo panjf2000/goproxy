@@ -56,5 +56,5 @@ func (goproxy *ProxyServer) reverseHandler(req *http.Request) {
 	}
 	req.Host = proxyHost
 	req.URL.Host = req.Host
-	//req.URL.Scheme = "http"
+	req.URL.Scheme = "http"
 }

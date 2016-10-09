@@ -75,7 +75,7 @@ var (
 )
 
 func regexpCompile(str string) *regexp.Regexp {
-	return regexp.MustCompile(str)
+	return regexp.MustCompile("^" + str + "$")
 }
 
 // 判断val是否能正确匹配exp中的正则表达式。
