@@ -48,6 +48,9 @@ const (
 	hostPattern = "(" + ip4Pattern + "|(" + domainPattern + "))" + // IP或域名
 		`(:\d{1,4})?` // 端口
 
+	weightHostPattern = "(" + ip4Pattern + "|(" + domainPattern + "))" + // IP或域名
+	`(:\d{1,4}\^\d+)?` // 端口
+
 	// 匹配URL
 	urlPattern = `((https|http|ftp|rtsp|mms)?://)?` + // 协议
 		`(([0-9a-zA-Z]+:)?[0-9a-zA-Z_-]+@)?` + // pwd:user@
@@ -68,6 +71,7 @@ var (
 	CnMobile = regexpCompile(cnMobilePattern)
 	CnTel    = regexpCompile(cnTelPattern)
 	Host     = regexpCompile(hostPattern)
+	WeightHost = regexpCompile(weightHostPattern)
 )
 
 func regexpCompile(str string) *regexp.Regexp {
@@ -133,4 +137,8 @@ func IsEmail(val interface{}) bool {
 
 func IsHost(val interface{}) bool {
 	return isMatch(Host, val)
+}
+
+func IsWeightHost(val interface{}) bool {
+	return isMatch(WeightHost, val)
 }
