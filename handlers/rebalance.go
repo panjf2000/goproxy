@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"strings"
+	"strconv"
 )
 
 //ReverseHandler handles request for reverse proxy.
@@ -22,12 +23,17 @@ func (goproxy *ProxyServer) ReverseHandler(req *http.Request) {
 func (goproxy *ProxyServer) reverseHandler(req *http.Request) {
 	var proxyHost string
 	memcacheServers := make(map[string]int)
+	var serverNodes []string
 	for _, val := range conf.ProxyPass {
 		if tool.IsHost(val) {
 			memcacheServers[val] = 1
+			append(serverNodes, val)
 		}else if tool.IsWeightHost(val) {
 			hostPair := strings.Split(val, "^")
-			memcacheServers[hostPair[0]] = int(hostPair[1])
+			host := hostPair[0]
+			weight, _ := strconv.Atoi(hostPair[1])
+			memcacheServers[host] = weight
+			append(serverNodes, host)
 		}else {
 
 		}
@@ -40,12 +46,12 @@ func (goproxy *ProxyServer) reverseHandler(req *http.Request) {
 			server, _ := ring.GetNode(clientIP)
 			proxyHost = server
 		} else {
-			proxyHost = memcacheServers[rand.Intn(len(memcacheServers))]
+			proxyHost = serverNodes[rand.Intn(len(serverNodes))]
 		}
 	case 1:
 		// 随机选取一个负载均衡的服务器
-		index := rand.Intn(len(memcacheServers))
-		proxyHost = memcacheServers[index]
+		index := rand.Intn(len(serverNodes))
+		proxyHost = serverNodes[index]
 
 	}
 	req.Host = proxyHost
