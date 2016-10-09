@@ -6,6 +6,7 @@
 ## 1.反向代理、负载均衡，负载策略目前支持随机选取和IP HASH两种模式；
 - 支持GET/POST/PUT/DELETE这些Method，还有https的CONNECT方法
 - 支持http authentication
+- 负载策略支持预设权重，依权重优先转发请求
 
 ## 2.内容转发：
 - 可以控制代理特定的请求，屏蔽特定的请求，甚至可以重写特定的请求,
@@ -34,31 +35,35 @@ go build
 先配置config.json配置文件，一个典型的例子如下：
 ```
 {
-“port”: “:8080”,
-“reverse”: true,
-“proxy_pass”: [
-“127.0.0.1:80”
-],
-“mode”: 0,
-“auth”: false,
-“cache”: true,
-“redis_host”: “127.0.0.1:6379”,
-“redis_passwd”: “redis_secret”,
-“cache_timeout”: 60,
-“log”: 1,
-“admin”: {
-“Admin”: “root”
-},
-“user”: {
-“agent”: “proxy”
+  "port": ":8080",
+  "reverse": true,
+  "proxy_pass": [
+    "127.0.0.1:80^10",
+    "127.0.0.1:88^5",
+    "127.0.0.1:8088^2",
+    "127.0.0.1:8888"
+  ],
+  "mode": 0,
+  "auth": false,
+  "cache": true,
+  "redis_host": "127.0.0.1:6379",
+  "redis_passwd": "redis_secret",
+  "cache_timeout": 60,
+  "log": 1,
+  "admin": {
+    "Admin": "root"
+  },
+  "user": {
+    "agent": "proxy"
+  }
 }
-}
+
 ```
 
 ### config释义：
 - port：代理服务器的监听端口
 - reverse：设置反向代理，值为true或者false
-- proxy_pass：反向代理目标服务器地址列表，如[“127.0.0.1:80”,“127.0.0.1:8080”]
+- proxy_pass：反向代理目标服务器地址列表，如["127.0.0.1:80^10","127.0.0.1:88^5","127.0.0.1:8088^2","127.0.0.1:8888"]，目前支持设置服务器权重，依权重优先转发请求
 - mode：设置负载策略，即选择转发的服务器，目前支持两种模式：1.随机挑选一个服务器 2.IP HASH模式，根据client ip用hash ring择取服务器
 - auth：开启代理认证，值为true或者false
 - cache：是否开启缓存（缓存response），值为true或者false
