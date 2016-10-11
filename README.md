@@ -81,4 +81,4 @@ go build
 **PS:这个项目中的模块引用路径还是我本机上的路径，也就是我的github路径，编译源码前请将源码中的引用路径修改成你自己机器上的路径。**
 
 # 二次开发
->目前该项目已实现反向代理负载均衡，支持缓存，也可以支持开发者精确控制请求，如屏蔽某些请求或者重写某些请求，甚至于对response进行自定义修改（定制>response的内容），要实现精确控制request，只需继承handlers/proxy.go中的ProxyServer struct，重写它的ServeHTTP方法，进行自定义的处理即可。
+>目前该项目已实现反向代理负载均衡，支持缓存，也可以支持开发者精确控制请求，如屏蔽某些请求或者重写某些请求，甚至于对response进行自定义修改（定制response的内容），要实现精确控制request，只需继承handlers/proxy.go中的ProxyServer struct，重写它的ServeHTTP方法，进行自定义的处理即可。
