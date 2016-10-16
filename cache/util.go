@@ -12,7 +12,7 @@ func IsCache(resp *http.Response) bool {
 	Cache_Control := resp.Header.Get("Cache-Control")
 	Content_type := resp.Header.Get("Content-Type")
 	if strings.Index(Cache_Control, "private") != -1 ||
-		strings.Index(Cache_Control, "no-store") != -1 ||
+		strings.Index(Cache_Control, "no-cache") != -1 ||
 		strings.Index(Content_type, "application") != -1 ||
 		strings.Index(Content_type, "video") != -1 ||
 		strings.Index(Content_type, "audio") != -1 ||
