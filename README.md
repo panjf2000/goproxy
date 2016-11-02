@@ -30,8 +30,8 @@ radix（一个Redis 官方推荐的使用golang实现的redis client，轻量级
 **另外，该项目需要redis数据库的支持，所以要有一个redis环境**
 
 ## 3.编译源码
-cd $GOPATH/src/
-go build
+1. cd $GOPATH/src/
+2. go build
 
 ## 4.运行
 先配置config.json配置文件，一个典型的例子如下：
