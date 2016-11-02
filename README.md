@@ -26,6 +26,7 @@ logrus（一个开源的高性能golang日志库）；
 radix（一个Redis 官方推荐的使用golang实现的redis client，轻量级、实现优雅）
 >logrus安装：go get github.com/Sirupsen/logrus  
 >radix安装：go get github.com/mediocregopher/radix.v2/…
+>另外，该项目需要redis数据库的支持，所以要有一个redis环境
 
 ## 3.编译源码
 cd $GOPATH/src/
