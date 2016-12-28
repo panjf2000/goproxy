@@ -72,7 +72,8 @@ func New(resp *http.Response) *Cache {
 		c.Vlidity = Time.Add(time.Duration(max_age) * time.Second)
 		c.maxAge = max_age
 	} else {
-		c.maxAge, max_age = 0.1 * 60 * 60, 0.1 * 60 * 60
+		//c.maxAge, max_age = 0.1 * 60 * 60, 0.1 * 60 * 60
+		c.maxAge, max_age = conf.CacheTimeout, conf.CacheTimeout
 		Time := time.Now().UTC()
 		c.Vlidity = Time.Add(time.Duration(max_age) * time.Second)
 	}
