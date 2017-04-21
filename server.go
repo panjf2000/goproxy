@@ -9,6 +9,6 @@ import (
 func main() {
 	goproxy := handlers.NewProxyServer()
 
-	log.Println("start my proxy server!")
-	log.Fatal(goproxy.ListenAndServe())
+	log.Infof("start proxy server in port:%d", 8080)
+	log.(goproxy.ListenAndServe())
 }
