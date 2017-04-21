@@ -10,5 +10,5 @@ func main() {
 	goproxy := handlers.NewProxyServer()
 
 	log.Infof("start proxy server in port:%d", 8080)
-	log.(goproxy.ListenAndServe())
+	log.Fatal(goproxy.ListenAndServe())
 }
