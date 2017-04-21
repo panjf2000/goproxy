@@ -19,6 +19,15 @@ type CachePool struct {
 	pool *pool.Pool
 }
 
+func HeartBeat(p *pool.Pool, intervalTime int) {
+	go func() {
+		for {
+			p.Cmd("PING")
+			time.Sleep(time.Duration(intervalTime) * time.Second)
+		}
+	}()
+}
+
 func NewCachePool(address, password string, cap int) *CachePool {
 	p, err := pool.NewCustom("tcp", address, cap, func(network, addr string) (*redis.Client, error) {
 		client, err := redis.Dial(network, addr)
@@ -38,6 +47,10 @@ func NewCachePool(address, password string, cap int) *CachePool {
 	if n == 0 {
 
 	}
+
+	// keep redis pool alive
+	HeartBeat(p, 10)
+
 	return &CachePool{pool: p}
 
 }
