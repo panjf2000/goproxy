@@ -4,10 +4,10 @@ import (
 	_ "bufio"
 	"github.com/Sirupsen/logrus"
 	"github.com/panjf2000/goproxy/cache"
+	"github.com/panjf2000/goproxy/tool"
 	"io"
 	"net"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -20,28 +20,7 @@ type ProxyServer struct {
 var proxyLog *logrus.Logger
 
 func init() {
-	var filename string = "logs/proxy.log"
-	proxyLog = logrus.New()
-	// Log as JSON instead of the default ASCII formatter.
-	proxyLog.Formatter = &logrus.TextFormatter{}
-
-	// Output to stderr instead of stdout, could also be a file.
-	if cache.CheckFileIsExist(filename) {
-		f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
-		if err != nil {
-			return
-		}
-		proxyLog.Out = f
-	} else {
-		f, err := os.Create(filename)
-		if err != nil {
-			return
-		}
-		proxyLog.Out = f
-	}
-
-	// Only log the warning severity or above.
-	proxyLog.Level = logrus.DebugLevel
+	proxyLog, _ = tool.InitLog("logs/proxy.log")
 
 }
 

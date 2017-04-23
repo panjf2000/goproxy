@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 //ReverseHandler handles request for reverse proxy.
@@ -28,13 +28,13 @@ func (goproxy *ProxyServer) reverseHandler(req *http.Request) {
 		if tool.IsHost(val) {
 			memcacheServers[val] = 1
 			serverNodes = append(serverNodes, val)
-		}else if tool.IsWeightHost(val) {
+		} else if tool.IsWeightHost(val) {
 			hostPair := strings.Split(val, "^")
 			host := hostPair[0]
 			weight, _ := strconv.Atoi(hostPair[1])
 			memcacheServers[host] = weight
 			serverNodes = append(serverNodes, host)
-		}else {
+		} else {
 
 		}
 	}

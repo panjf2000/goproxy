@@ -4,10 +4,9 @@ import (
 	"encoding/base64"
 	"errors"
 	"github.com/Sirupsen/logrus"
-	"github.com/panjf2000/goproxy/cache"
+	"github.com/panjf2000/goproxy/tool"
 	_ "github.com/panjf2000/goproxy/tool"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -15,28 +14,7 @@ var HTTP_407 = []byte("HTTP/1.1 407 Proxy Authorization Required\r\nProxy-Authen
 var authLog *logrus.Logger
 
 func init() {
-	var filename string = "logs/auth.log"
-	authLog = logrus.New()
-	// Log as JSON instead of the default ASCII formatter.
-	authLog.Formatter = &logrus.TextFormatter{}
-
-	// Output to stderr instead of stdout, could also be a file.
-	if cache.CheckFileIsExist(filename) {
-		f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
-		if err != nil {
-			return
-		}
-		authLog.Out = f
-	} else {
-		f, err := os.Create(filename)
-		if err != nil {
-			return
-		}
-		authLog.Out = f
-	}
-
-	// Only log the warning severity or above.
-	authLog.Level = logrus.DebugLevel
+	authLog, _ = tool.InitLog("logs/auth.log")
 
 }
 

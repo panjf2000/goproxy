@@ -4,41 +4,18 @@ import (
 	_ "bufio"
 	"bytes"
 	"github.com/Sirupsen/logrus"
-	"github.com/panjf2000/goproxy/cache"
 	"github.com/panjf2000/goproxy/interface"
+	"github.com/panjf2000/goproxy/tool"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 )
 
 var cachePool api.CachePool
 var cacheLog *logrus.Logger
 
 func init() {
-	var filename string = "logs/cache.log"
-	cacheLog = logrus.New()
-	// Log as JSON instead of the default ASCII formatter.
-	cacheLog.Formatter = &logrus.TextFormatter{}
-
-	// Output to stderr instead of stdout, could also be a file.
-	if cache.CheckFileIsExist(filename) {
-		f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
-		if err != nil {
-			return
-		}
-		cacheLog.Out = f
-	} else {
-		f, err := os.Create(filename)
-		if err != nil {
-			return
-		}
-		cacheLog.Out = f
-	}
-
-	// Only log the warning severity or above.
-	cacheLog.Level = logrus.DebugLevel
-
+	cacheLog, _ = tool.InitLog("logs/cache.log")
 }
 
 func RegisterCachePool(c api.CachePool) {
@@ -55,13 +32,13 @@ func (goproxy *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Reque
 	if c != nil {
 		if c.Verify() {
 			cacheLog.WithFields(logrus.Fields{
-				"request url":    uri,
+				"request url": uri,
 			}).Debug("Found cache!")
 			c.WriteTo(rw)
 			return
 		} else {
 			cacheLog.WithFields(logrus.Fields{
-				"request url":    uri,
+				"request url": uri,
 			}).Debug("Delete cache!")
 			cachePool.Delete(uri)
 		}
@@ -80,7 +57,7 @@ func (goproxy *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Reque
 	CopyResponse(cresp, resp)
 
 	cacheLog.WithFields(logrus.Fields{
-		"request url":    uri,
+		"request url": uri,
 	}).Debug("Check out this cache and then stores it if it is right!")
 	go cachePool.CheckAndStore(uri, cresp)
 

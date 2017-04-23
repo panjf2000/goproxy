@@ -2,7 +2,6 @@ package cache
 
 import (
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -11,7 +10,7 @@ func IsCache(resp *http.Response) bool {
 
 	Cache_Control := resp.Header.Get("Cache-Control")
 	Content_type := resp.Header.Get("Content-Type")
-	if Cache_Control == "" || Content_type == ""{
+	if Cache_Control == "" || Content_type == "" {
 		return true
 	}
 	if strings.Index(Cache_Control, "private") != -1 ||
@@ -27,11 +26,4 @@ func IsCache(resp *http.Response) bool {
 		return false
 	}
 	return true
-}
-func CheckFileIsExist(filename string) bool {
-	var exist = true
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		exist = false
-	}
-	return exist
 }
