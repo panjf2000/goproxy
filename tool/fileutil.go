@@ -15,6 +15,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Sirupsen/logrus"
+	"github.com/robfig/cron"
 	"io/ioutil"
 	"os"
 	"time"
@@ -93,13 +94,13 @@ func DelDir(dirPath string) error {
 }
 
 func InitLog(logpath string) (*logrus.Logger, error) {
-	logpath = fmt.Sprintf("%s.%s", logpath, time.Now().Format("20060102"))
+	newLogpath := fmt.Sprintf("%s.%s", logpath, time.Now().Format("20060102"))
 	logger := logrus.New()
 	// Log as JSON instead of the default ASCII formatter.
 	logger.Formatter = &logrus.TextFormatter{}
 
 	// Output to stderr instead of stdout, could also be a file.
-	f, err := os.OpenFile(logpath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0660)
+	f, err := os.OpenFile(newLogpath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0660)
 	if err != nil {
 		return nil, err
 	}
@@ -108,6 +109,16 @@ func InitLog(logpath string) (*logrus.Logger, error) {
 	// Only log the warning severity or above.
 	logger.Level = logrus.DebugLevel
 	logger.SetNoLock()
+
+	// set crontab task to generate a new log file with names ending in date-format suffix.
+	spec := "0 0 1 * * *" // 1:00 am every day.
+	c := cron.New()
+	c.AddFunc(spec, func() {
+		cronLogpath := fmt.Sprintf("%s.%s", logpath, time.Now().Format("20060102"))
+		logger.Out, _ = os.OpenFile(cronLogpath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0660)
+	})
+	c.Start()
+
 	return logger, nil
 
 }
