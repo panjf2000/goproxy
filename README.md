@@ -1,5 +1,9 @@
 # 2017.07.22项目更新
-## 新增4种负载均衡算法：轮询（Round Robin）法、加权轮询（Weight Round Robin）法、Power of Two Choices (P2C)算法、加权一致性哈希算法。
+## 新增4种负载均衡算法：
+* 轮询（Round Robin）法
+* 加权轮询（Weight Round Robin）法
+* Power of Two Choices (P2C)算法
+* 加权一致性哈希算法。
 
 
 # goproxy
