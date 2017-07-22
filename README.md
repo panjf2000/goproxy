@@ -1,3 +1,7 @@
+# 2017.07.22项目更新
+## 新增4种负载均衡算法：轮询（Round Robin）法、加权轮询（Weight Round Robin）法、Power of Two Choices (P2C)算法、加权一致性哈希算法。
+
+
 # goproxy
 >goproxy是使用golang实现的一个基本的负载均衡服务器，支持缓存（使用redis）；反向代理，目前支持随机分发和IP HASH两种模式，另外，对转发的请求有较大的控制度，可以控制代理特定的请求，屏蔽特定的请求，甚至可以重写特定的请求。 另外，有时候项目需要用到第三方的服务并对返回的数据进行自定义修改，调用第三方的API，利用proxy server可以很容易的控制第三方API返回的数据并进行自定义修改。
 
@@ -67,7 +71,7 @@ cron（golang实现的一个crontab）
 - port：代理服务器的监听端口
 - reverse：设置反向代理，值为true或者false
 - proxy_pass：反向代理目标服务器地址列表，如["127.0.0.1:80^10","127.0.0.1:88^5","127.0.0.1:8088^2","127.0.0.1:8888"]，目前支持设置服务器权重，依权重优先转发请求
-- mode：设置负载策略，即选择转发的服务器，目前支持两种模式：1.随机挑选一个服务器 2.IP HASH模式，根据client ip用hash ring择取服务器
+- mode：设置负载策略，即选择转发的服务器，目前支持模式：0.随机挑选一个服务器 1.轮询法 2.p2c负载均衡算法 3.IP HASH模式，根据client ip用hash ring择取服务器 4.加权一致性哈希算法
 - auth：开启代理认证，值为true或者false
 - cache：是否开启缓存（缓存response），值为true或者false
 - redis_host：缓存模块的redis host
