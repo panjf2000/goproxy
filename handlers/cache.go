@@ -23,7 +23,7 @@ func RegisterCachePool(c api.CachePool) {
 }
 
 //CacheHandler handles "Get" request
-func (goproxy *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Request) {
+func (ps *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Request) {
 
 	var uri = req.RequestURI
 
@@ -45,7 +45,7 @@ func (goproxy *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Reque
 	}
 
 	RmProxyHeaders(req)
-	resp, err := goproxy.Travel.RoundTrip(req)
+	resp, err := ps.Travel.RoundTrip(req)
 	if err != nil {
 		http.Error(rw, err.Error(), 500)
 		return
@@ -69,7 +69,7 @@ func (goproxy *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Reque
 	nr, err := io.Copy(rw, resp.Body)
 	if err != nil && err != io.EOF {
 		cacheLog.WithFields(logrus.Fields{
-			"client": goproxy.Browser,
+			"client": ps.Browser,
 			"error":  err,
 		}).Error("occur an error when copying remote response to this client")
 		return

@@ -19,23 +19,23 @@ func init() {
 }
 
 //Auth provides basic authorizaton for proxy server.
-func (goproxy *ProxyServer) Auth(rw http.ResponseWriter, req *http.Request) bool {
+func (ps *ProxyServer) Auth(rw http.ResponseWriter, req *http.Request) bool {
 	var err error
 	if conf.Auth == true {
 		//代理服务器登入认证
-		if goproxy.Browser, err = goproxy.auth(rw, req); err != nil {
+		if ps.Browser, err = ps.auth(rw, req); err != nil {
 			authLog.Error("Fail to log in!")
 			authLog.WithFields(logrus.Fields{
 				"error": err,
 			}).Error("Fail to log in!")
-			//goproxy.Browser = "Anonymous"
+			//ps.Browser = "Anonymous"
 			return false
 		} else {
 			authLog.Info("authentication is passed!")
 			return true
 		}
 	} else {
-		goproxy.Browser = "Anonymous"
+		ps.Browser = "Anonymous"
 		return true
 	}
 
@@ -43,7 +43,7 @@ func (goproxy *ProxyServer) Auth(rw http.ResponseWriter, req *http.Request) bool
 }
 
 //Auth provides basic authorizaton for proxy server.
-func (goproxy *ProxyServer) auth(rw http.ResponseWriter, req *http.Request) (string, error) {
+func (ps *ProxyServer) auth(rw http.ResponseWriter, req *http.Request) (string, error) {
 
 	auth := req.Header.Get("Proxy-Authorization")
 	auth = strings.Replace(auth, "Basic ", "", 1)

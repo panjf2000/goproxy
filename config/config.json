@@ -2,16 +2,16 @@
   "port": ":8080",
   "reverse": true,
   "proxy_pass": [
-    "127.0.0.1:80^10",
-    "127.0.0.1:88^5",
-    "127.0.0.1:8088^2",
-    "127.0.0.1:8888"
+    "127.0.0.1:6000",
+    "127.0.0.1:7000",
+    "127.0.0.1:8000",
+    "127.0.0.1:9000"
   ],
-  "mode": 0,
+  "mode": 2,
   "auth": false,
-  "cache": true,
+  "cache": false,
   "redis_host": "127.0.0.1:6379",
-  "redis_passwd": "redis_secret",
+  "redis_passwd": "redis_passwd",
   "cache_timeout": 60,
   "log": 1,
   "admin": {

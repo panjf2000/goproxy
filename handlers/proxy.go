@@ -41,7 +41,7 @@ func NewProxyServer() *http.Server {
 
 //ServeHTTP will be automatically called by system.
 //ProxyServer implements the Handler interface which need ServeHTTP.
-func (goproxy *ProxyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+func (ps *ProxyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	defer func() {
 		if err := recover(); err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
@@ -50,32 +50,33 @@ func (goproxy *ProxyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request)
 			}).Panic("Call a panic!")
 		}
 	}()
-	if !goproxy.Auth(rw, req) {
+	if !ps.Auth(rw, req) {
 		return
 	}
 
-	goproxy.ReverseHandler(req)
+	ps.LoadBalancing(req)
 
 	if req.Method == "CONNECT" {
-		goproxy.HttpsHandler(rw, req)
+		ps.HttpsHandler(rw, req)
 	} else if conf.Cache == true && req.Method == "GET" {
-		goproxy.CacheHandler(rw, req)
+		ps.CacheHandler(rw, req)
 	} else {
-		goproxy.HttpHandler(rw, req)
+		ps.HttpHandler(rw, req)
 	}
+	ps.Done(req)
 }
 
 //HttpHandler handles http connections.
 //处理普通的http请求
-func (goproxy *ProxyServer) HttpHandler(rw http.ResponseWriter, req *http.Request) {
+func (ps *ProxyServer) HttpHandler(rw http.ResponseWriter, req *http.Request) {
 	proxyLog.WithFields(logrus.Fields{
-		"request user":   goproxy.Browser,
+		"request user":   ps.Browser,
 		"request method": req.Method,
 		"request url":    req.URL.Host,
 	}).Info("request's detail !")
 	RmProxyHeaders(req)
 
-	resp, err := goproxy.Travel.RoundTrip(req)
+	resp, err := ps.Travel.RoundTrip(req)
 	if err != nil {
 		proxyLog.WithFields(logrus.Fields{
 			"error": err,
@@ -93,7 +94,7 @@ func (goproxy *ProxyServer) HttpHandler(rw http.ResponseWriter, req *http.Reques
 	nr, err := io.Copy(rw, resp.Body)
 	if err != nil && err != io.EOF {
 		proxyLog.WithFields(logrus.Fields{
-			"client": goproxy.Browser,
+			"client": ps.Browser,
 			"error":  err,
 		}).Error("occur an error when copying remote response to this client")
 		return
@@ -108,9 +109,9 @@ var HTTP_200 = []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
 
 // HttpsHandler handles any connection which need connect method.
 // 处理https连接，主要用于CONNECT方法
-func (goproxy *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Request) {
+func (ps *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Request) {
 	proxyLog.WithFields(logrus.Fields{
-		"user": goproxy.Browser,
+		"user": ps.Browser,
 		"host": req.URL.Host,
 	}).Info("http user tried to connect host!")
 
@@ -118,7 +119,7 @@ func (goproxy *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Reque
 	Client, _, err := hj.Hijack() //获取客户端与代理服务器的tcp连接
 	if err != nil {
 		proxyLog.WithFields(logrus.Fields{
-			"user":        goproxy.Browser,
+			"user":        ps.Browser,
 			"request uri": req.RequestURI,
 		}).Error("http user failed to get tcp connection!")
 		http.Error(rw, "Failed", http.StatusBadRequest)
@@ -128,7 +129,7 @@ func (goproxy *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Reque
 	Remote, err := net.Dial("tcp", req.URL.Host) //建立服务端和代理服务器的tcp连接
 	if err != nil {
 		proxyLog.WithFields(logrus.Fields{
-			"user":        goproxy.Browser,
+			"user":        ps.Browser,
 			"request uri": req.RequestURI,
 		}).Error("http user failed to connect this uri!")
 		http.Error(rw, "Failed", http.StatusBadGateway)
@@ -137,8 +138,8 @@ func (goproxy *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Reque
 
 	Client.Write(HTTP_200)
 
-	go copyRemoteToClient(goproxy.Browser, Remote, Client)
-	go copyRemoteToClient(goproxy.Browser, Client, Remote)
+	go copyRemoteToClient(ps.Browser, Remote, Client)
+	go copyRemoteToClient(ps.Browser, Client, Remote)
 }
 
 func copyRemoteToClient(User string, Remote, Client net.Conn) {
