@@ -58,7 +58,7 @@ func (ps *ProxyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 
 	if req.Method == "CONNECT" {
 		ps.HttpsHandler(rw, req)
-	} else if conf.Cache == true && req.Method == "GET" {
+	} else if req.Method == "GET" && conf.Cache == true {
 		ps.CacheHandler(rw, req)
 	} else {
 		ps.HttpHandler(rw, req)

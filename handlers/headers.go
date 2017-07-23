@@ -16,7 +16,7 @@ func CopyHeaders(dst, src http.Header) {
 
 // ClearHeaders clear headers.
 func ClearHeaders(headers http.Header) {
-	for key, _ := range headers {
+	for key := range headers {
 		headers.Del(key)
 	}
 }

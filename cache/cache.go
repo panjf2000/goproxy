@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-type Cache struct {
+type HttpCache struct {
 	Header        http.Header `json:"header"`
 	Body          []byte      `json:"body"`
 	StatusCode    int         `json:"status_code"`
@@ -22,8 +22,8 @@ type Cache struct {
 	maxAge  int64     `json:"-"`
 }
 
-func New(resp *http.Response) *Cache {
-	c := new(Cache)
+func NewCacheResp(resp *http.Response) *HttpCache {
+	c := new(HttpCache)
 	c.Header = make(http.Header)
 	CopyHeaders(c.Header, resp.Header)
 	c.StatusCode = resp.StatusCode
@@ -38,16 +38,17 @@ func New(resp *http.Response) *Cache {
 	c.ETag = c.Header.Get("ETag")
 	c.Last_Modified = c.Header.Get("Last-Modified")
 
-	Cache_Control := c.Header.Get("Cache-Control")
+	cacheControl := c.Header.Get("Cache-Control")
 
 	// no-cache means you should verify data before use cache.
 	// only use cache when remote server returns 302 status.
-	if strings.Index(Cache_Control, "no-cache") != -1 ||
-		strings.Index(Cache_Control, "must-revalidate") != -1 ||
-		strings.Index(Cache_Control, "proxy-revalidate") != -1 {
-		c.Mustverified = true
+	if strings.Index(cacheControl, "no-cache") != -1 ||
+		strings.Index(cacheControl, "must-revalidate") != -1 ||
+		strings.Index(cacheControl, "proxy-revalidate") != -1 {
+		c.Mustverified = false
 		return nil
 	}
+	c.Mustverified = true
 
 	if Expires := c.Header.Get("Expires"); Expires != "" {
 		c.Vlidity, err = time.Parse(http.TimeFormat, Expires)
@@ -57,8 +58,8 @@ func New(resp *http.Response) *Cache {
 		log.Println("expire:", c.Vlidity)
 	}
 
-	max_age := getAge(Cache_Control)
-	if max_age != -1 {
+	maxAge := getAge(cacheControl)
+	if maxAge != -1 {
 		var Time time.Time
 		date := c.Header.Get("Date")
 		if date == "" {
@@ -69,13 +70,13 @@ func New(resp *http.Response) *Cache {
 				return nil
 			}
 		}
-		c.Vlidity = Time.Add(time.Duration(max_age) * time.Second)
-		c.maxAge = max_age
+		c.Vlidity = Time.Add(time.Duration(maxAge) * time.Second)
+		c.maxAge = maxAge
 	} else {
 		//c.maxAge, max_age = 0.1 * 60 * 60, 0.1 * 60 * 60
-		c.maxAge, max_age = conf.CacheTimeout, conf.CacheTimeout
+		c.maxAge, maxAge = conf.CacheTimeout, conf.CacheTimeout
 		Time := time.Now().UTC()
-		c.Vlidity = Time.Add(time.Duration(max_age) * time.Second)
+		c.Vlidity = Time.Add(time.Duration(maxAge) * time.Second)
 	}
 	log.Println("all:", c.Vlidity)
 
@@ -83,8 +84,8 @@ func New(resp *http.Response) *Cache {
 }
 
 // Verify verifies whether cache is out of date.
-func (c *Cache) Verify() bool {
-	if c.Mustverified == false && c.Vlidity.After(time.Now().UTC()) {
+func (c *HttpCache) Verify() bool {
+	if c.Mustverified == true && c.Vlidity.After(time.Now().UTC()) {
 		return true
 	}
 
@@ -108,11 +109,11 @@ func (c *Cache) Verify() bool {
 	if resp.StatusCode != http.StatusNotModified {
 		return false
 	}
-	return true
+	return false
 }
 
 // CacheHandler handles "Get" request
-func (c *Cache) WriteTo(rw http.ResponseWriter) (int, error) {
+func (c *HttpCache) WriteTo(rw http.ResponseWriter) (int, error) {
 
 	CopyHeaders(rw.Header(), c.Header)
 	rw.WriteHeader(c.StatusCode)
@@ -132,14 +133,14 @@ func CopyHeaders(dst, src http.Header) {
 }
 
 //getAge from Cache Control get cache's lifetime.
-func getAge(Cache_Control string) (age int64) {
+func getAge(cacheControl string) (age int64) {
 	f := func(sage string) int64 {
 		var tmpAge int64
-		idx := strings.Index(Cache_Control, sage)
+		idx := strings.Index(cacheControl, sage)
 		if idx != -1 {
-			for i := idx + len(sage) + 1; i < len(Cache_Control); i++ {
-				if Cache_Control[i] >= '0' && Cache_Control[i] <= '9' {
-					tmpAge = tmpAge*10 + int64(Cache_Control[i])
+			for i := idx + len(sage) + 1; i < len(cacheControl); i++ {
+				if cacheControl[i] >= '0' && cacheControl[i] <= '9' {
+					tmpAge = tmpAge*10 + int64(cacheControl[i])
 				} else {
 					break
 				}
@@ -148,8 +149,8 @@ func getAge(Cache_Control string) (age int64) {
 		}
 		return -1
 	}
-	if s_maxage := f("s-maxage"); s_maxage != -1 {
-		return s_maxage
+	if sMaxage := f("s-maxage"); sMaxage != -1 {
+		return sMaxage
 	}
 	return f("max-age")
 }

@@ -15,7 +15,7 @@ func MD5Uri(uri string) string {
 	return fmt.Sprintf("%x", md5.Sum([]byte(uri)))
 }
 
-type CachePool struct {
+type ConnCachePool struct {
 	pool *pool.Pool
 }
 
@@ -28,7 +28,7 @@ func HeartBeat(p *pool.Pool, intervalTime int) {
 	}()
 }
 
-func NewCachePool(address, password string, cap int) *CachePool {
+func NewCachePool(address, password string, cap int) *ConnCachePool {
 	p, err := pool.NewCustom("tcp", address, cap, func(network, addr string) (*redis.Client, error) {
 		client, err := redis.Dial(network, addr)
 		if err != nil {
@@ -51,20 +51,20 @@ func NewCachePool(address, password string, cap int) *CachePool {
 	// keep redis pool alive
 	HeartBeat(p, 10)
 
-	return &CachePool{pool: p}
+	return &ConnCachePool{pool: p}
 
 }
 
-func (c *CachePool) Get(uri string) api.Cache {
+func (c *ConnCachePool) Get(uri string) api.Cache {
 	//log.Println("get cahche of ", uri)
-	if cache := c.get(MD5Uri(uri)); cache != nil {
-		//log.Println(*cache)
-		return cache
+	if respCache := c.get(MD5Uri(uri)); respCache != nil {
+		//log.Println(*cacheResp)
+		return respCache
 	}
 	return nil
 }
 
-func (c *CachePool) get(md5Uri string) *Cache {
+func (c *ConnCachePool) get(md5Uri string) *HttpCache {
 	conn, _ := c.pool.Get()
 	defer c.pool.Put(conn)
 
@@ -75,16 +75,16 @@ func (c *CachePool) get(md5Uri string) *Cache {
 		return nil
 	}
 	//log.Println(string(b))
-	cache := new(Cache)
-	json.Unmarshal(b, &cache)
-	return cache
+	respCache := new(HttpCache)
+	json.Unmarshal(b, &respCache)
+	return respCache
 }
 
-func (c *CachePool) Delete(uri string) {
+func (c *ConnCachePool) Delete(uri string) {
 	c.delete(MD5Uri(uri))
 }
 
-func (c *CachePool) delete(md5Uri string) {
+func (c *ConnCachePool) delete(md5Uri string) {
 	conn, _ := c.pool.Get()
 	defer c.pool.Put(conn)
 
@@ -94,21 +94,18 @@ func (c *CachePool) delete(md5Uri string) {
 	return
 }
 
-func (c *CachePool) CheckAndStore(uri string, resp *http.Response) {
-	if !IsCache(resp) {
+func (c *ConnCachePool) CheckAndStore(uri string, req *http.Request, resp *http.Response) {
+	if !IsReqCache(req) || !IsRespCache(resp) {
 		return
 	}
+	respCache := NewCacheResp(resp)
 
-	cache := New(resp)
-
-	if cache == nil {
+	if respCache == nil {
 		return
 	}
-
-	//log.Println("store cache ", uri)
 
 	md5Uri := MD5Uri(uri)
-	b, err := json.Marshal(cache)
+	b, err := json.Marshal(respCache)
 	if err != nil {
 		//log.Println(err)
 		return
@@ -118,9 +115,9 @@ func (c *CachePool) CheckAndStore(uri string, resp *http.Response) {
 	defer c.pool.Put(conn)
 
 	err = conn.Cmd("MULTI").Err
-	//log.Println("successfully store cache ", uri)
+	//log.Println("successfully store cacheResp ", uri)
 	conn.Cmd("SET", md5Uri, b)
-	conn.Cmd("EXPIRE", md5Uri, cache.maxAge)
+	conn.Cmd("EXPIRE", md5Uri, respCache.maxAge)
 	err = conn.Cmd("EXEC").Err
 	if err != nil {
 		//log.Println(err)
@@ -129,6 +126,6 @@ func (c *CachePool) CheckAndStore(uri string, resp *http.Response) {
 
 }
 
-func (c *CachePool) Clear(d time.Duration) {
+func (c *ConnCachePool) Clear(d time.Duration) {
 
 }

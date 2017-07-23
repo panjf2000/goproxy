@@ -59,7 +59,7 @@ func (ps *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Request) {
 	cacheLog.WithFields(logrus.Fields{
 		"request url": uri,
 	}).Debug("Check out this cache and then stores it if it is right!")
-	go cachePool.CheckAndStore(uri, cresp)
+	go cachePool.CheckAndStore(uri, req, cresp)
 
 	ClearHeaders(rw.Header())
 	CopyHeaders(rw.Header(), resp.Header)
