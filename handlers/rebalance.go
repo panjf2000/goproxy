@@ -61,7 +61,7 @@ func (ps *ProxyServer) LoadBalancing(req *http.Request) {
 }
 
 //ReverseHandler handles request for reverse proxy.
-//处理反向代理请求
+//处理反向代理负载均衡请求
 func (ps *ProxyServer) loadBalancing(req *http.Request) {
 	var proxyHost string
 	switch conf.Mode {
@@ -70,8 +70,10 @@ func (ps *ProxyServer) loadBalancing(req *http.Request) {
 		index := rand.Intn(len(serverNodes))
 		proxyHost = serverNodes[index]
 	case 1:
+		// 轮询法选择反向服务器，支持权重
 		proxyHost, _ = r2LB.Balance()
 	case 2:
+		// power of two choices (p2c)负载均衡算法选择反向服务器
 		proxyHost, _ = p2cLB.Balance(req.RemoteAddr)
 	case 3:
 		// 根据客户端的IP算出一个HASH值，将请求分配到集群中的某一台服务器上, 依据配置文件中设置的每个服务器的权重进行负载均衡
@@ -83,6 +85,7 @@ func (ps *ProxyServer) loadBalancing(req *http.Request) {
 			proxyHost = serverNodes[rand.Intn(len(serverNodes))]
 		}
 	case 4:
+		// 边界一致性哈希算法选择反向服务器
 		proxyHost, _ = boundedLB.Balance(req.RemoteAddr)
 	}
 	req.Host = proxyHost
