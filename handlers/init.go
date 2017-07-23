@@ -4,6 +4,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/panjf2000/goproxy/config"
 	"os"
+	"github.com/panjf2000/goproxy/tool"
 )
 
 var conf config.Config
@@ -18,6 +19,9 @@ func initLog() {
 
 	// Only log the warning severity or above.
 	logrus.SetLevel(logrus.DebugLevel)
+	if !tool.CheckFileIsExist("logs") {
+		os.Mkdir("logs", 0777)
+	}
 
 }
 
