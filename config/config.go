@@ -5,7 +5,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"os"
-	"strings"
 )
 
 // Config 保存代理服务器的配置
@@ -63,27 +62,5 @@ func (c *Config) GetConfig(filename string) error {
 	if err != nil {
 		return err
 	}
-	return nil
-}
-
-// WriteTOFile writes config into json file.
-// WriteToFile 将config配置写入特定json文件
-func (c *Config) WriteToFile(filename string) error {
-	configFile, err := os.OpenFile(filename, os.O_WRONLY|os.O_TRUNC, os.ModePerm)
-	if err != nil {
-		return err
-	}
-	defer configFile.Close()
-
-	b, err := json.Marshal(c)
-	if err != nil {
-		return err
-	}
-	cjson := string(b)
-	cspilts := strings.Split(cjson, ",")
-	cjson = strings.Join(cspilts, ",\n")
-
-	configFile.Write([]byte(cjson))
-
 	return nil
 }

@@ -105,7 +105,7 @@ func (ps *ProxyServer) HttpHandler(rw http.ResponseWriter, req *http.Request) {
 	}).Info("response has been copied successfully!")
 }
 
-var HTTP_200 = []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
+var HTTP200 = []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
 
 // HttpsHandler handles any connection which need connect method.
 // 处理https连接，主要用于CONNECT方法
@@ -136,7 +136,7 @@ func (ps *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	Client.Write(HTTP_200)
+	Client.Write(HTTP200)
 
 	go copyRemoteToClient(ps.Browser, Remote, Client)
 	go copyRemoteToClient(ps.Browser, Client, Remote)
