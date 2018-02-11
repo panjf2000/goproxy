@@ -2,13 +2,16 @@ package handlers
 
 import (
 	_ "bufio"
-	"github.com/Sirupsen/logrus"
-	"github.com/panjf2000/goproxy/cache"
-	"github.com/panjf2000/goproxy/tool"
 	"io"
 	"net"
 	"net/http"
+	"path"
 	"time"
+
+	"github.com/Sirupsen/logrus"
+	"github.com/panjf2000/goproxy/cache"
+	"github.com/panjf2000/goproxy/config"
+	"github.com/panjf2000/goproxy/tool"
 )
 
 type ProxyServer struct {
@@ -20,18 +23,20 @@ type ProxyServer struct {
 var proxyLog *logrus.Logger
 
 func init() {
-	proxyLog, _ = tool.InitLog("logs/proxy.log")
+	logPath := config.RuntimeViper.GetString("server.log_path")
+	proxyLog, _ = tool.InitLog(path.Join(logPath, "proxy.log"))
 
 }
 
 // NewProxyServer returns a new proxyserver.
 func NewProxyServer() *http.Server {
-	if conf.Cache {
-		RegisterCachePool(cache.NewCachePool(conf.RedisHost, conf.RedisPasswd, 10))
+	if config.RuntimeViper.GetBool("server.cache") {
+		RegisterCachePool(cache.NewCachePool(config.RuntimeViper.GetString("server.redis_host"),
+			config.RuntimeViper.GetString("server.redis_pass"), 10))
 	}
 
 	return &http.Server{
-		Addr:           conf.Port,
+		Addr:           config.RuntimeViper.GetString("server.port"),
 		Handler:        &ProxyServer{Travel: &http.Transport{Proxy: http.ProxyFromEnvironment, DisableKeepAlives: true}},
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
@@ -58,7 +63,7 @@ func (ps *ProxyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 
 	if req.Method == "CONNECT" {
 		ps.HttpsHandler(rw, req)
-	} else if req.Method == "GET" && conf.Cache == true {
+	} else if req.Method == "GET" && config.RuntimeViper.GetBool("server.cache") {
 		ps.CacheHandler(rw, req)
 	} else {
 		ps.HttpHandler(rw, req)

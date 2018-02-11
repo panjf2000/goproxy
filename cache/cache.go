@@ -7,16 +7,18 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/panjf2000/goproxy/config"
 )
 
 type HttpCache struct {
-	Header        http.Header `json:"header"`
-	Body          []byte      `json:"body"`
-	StatusCode    int         `json:"status_code"`
-	URI           string      `json:"url"`
-	Last_Modified string      `json:"last_modified"` //eg:"Fri, 27 Jun 2014 07:19:49 GMT"
-	ETag          string      `json:"etag"`
-	Mustverified  bool        `json:"must_verified"`
+	Header       http.Header `json:"header"`
+	Body         []byte      `json:"body"`
+	StatusCode   int         `json:"status_code"`
+	URI          string      `json:"url"`
+	LastModified string      `json:"last_modified"` //eg:"Fri, 27 Jun 2014 07:19:49 GMT"
+	ETag         string      `json:"etag"`
+	Mustverified bool        `json:"must_verified"`
 	//Vlidity is a time when to verfiy the cache again.
 	Vlidity time.Time `json:"vlidity"`
 	maxAge  int64     `json:"-"`
@@ -36,7 +38,7 @@ func NewCacheResp(resp *http.Response) *HttpCache {
 	}
 
 	c.ETag = c.Header.Get("ETag")
-	c.Last_Modified = c.Header.Get("Last-Modified")
+	c.LastModified = c.Header.Get("Last-Modified")
 
 	cacheControl := c.Header.Get("Cache-Control")
 
@@ -74,7 +76,8 @@ func NewCacheResp(resp *http.Response) *HttpCache {
 		c.maxAge = maxAge
 	} else {
 		//c.maxAge, max_age = 0.1 * 60 * 60, 0.1 * 60 * 60
-		c.maxAge, maxAge = conf.CacheTimeout, conf.CacheTimeout
+		cacheTimeout := config.RuntimeViper.GetInt64("server.cache_timeout")
+		c.maxAge, maxAge = cacheTimeout, cacheTimeout
 		Time := time.Now().UTC()
 		c.Vlidity = Time.Add(time.Duration(maxAge) * time.Second)
 	}
@@ -94,8 +97,8 @@ func (c *HttpCache) Verify() bool {
 		return false
 	}
 
-	if c.Last_Modified != "" {
-		newReq.Header.Add("If-Modified-Since", c.Last_Modified)
+	if c.LastModified != "" {
+		newReq.Header.Add("If-Modified-Since", c.LastModified)
 	}
 	if c.ETag != "" {
 		newReq.Header.Add("If-None-Match", c.ETag)

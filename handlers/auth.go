@@ -3,25 +3,29 @@ package handlers
 import (
 	"encoding/base64"
 	"errors"
+	"net/http"
+	"path"
+	"strings"
+
 	"github.com/Sirupsen/logrus"
+	"github.com/panjf2000/goproxy/config"
 	"github.com/panjf2000/goproxy/tool"
 	_ "github.com/panjf2000/goproxy/tool"
-	"net/http"
-	"strings"
 )
 
-var HTTP_407 = []byte("HTTP/1.1 407 Proxy Authorization Required\r\nProxy-Authenticate: Basic realm=\"Secure Proxys\"\r\n\r\n")
+var HTTP407 = []byte("HTTP/1.1 407 Proxy Authorization Required\r\nProxy-Authenticate: Basic realm=\"Secure Proxys\"\r\n\r\n")
 var authLog *logrus.Logger
 
 func init() {
-	authLog, _ = tool.InitLog("logs/auth.log")
+	logPath := config.RuntimeViper.GetString("server.log_path")
+	authLog, _ = tool.InitLog(path.Join(logPath, "auth.log"))
 
 }
 
 //Auth provides basic authorizaton for proxy server.
 func (ps *ProxyServer) Auth(rw http.ResponseWriter, req *http.Request) bool {
 	var err error
-	if conf.Auth == true {
+	if config.RuntimeViper.GetBool("server.auth") {
 		//代理服务器登入认证
 		if ps.Browser, err = ps.auth(rw, req); err != nil {
 			authLog.Error("Fail to log in!")
@@ -49,7 +53,7 @@ func (ps *ProxyServer) auth(rw http.ResponseWriter, req *http.Request) (string, 
 	auth = strings.Replace(auth, "Basic ", "", 1)
 
 	if auth == "" {
-		NeedAuth(rw, HTTP_407)
+		NeedAuth(rw, HTTP407)
 		return "", errors.New("Need Proxy Authorization!")
 	}
 	data, err := base64.StdEncoding.DecodeString(auth)
@@ -65,14 +69,14 @@ func (ps *ProxyServer) auth(rw http.ResponseWriter, req *http.Request) (string, 
 
 	userPasswdPair := strings.Split(string(data), ":")
 	if len(userPasswdPair) != 2 {
-		NeedAuth(rw, HTTP_407)
+		NeedAuth(rw, HTTP407)
 		return "", errors.New("Fail to log in")
 	} else {
 		user = userPasswdPair[0]
 		passwd = userPasswdPair[1]
 	}
 	if Check(user, passwd) == false {
-		NeedAuth(rw, HTTP_407)
+		NeedAuth(rw, HTTP407)
 		return "", errors.New("Fail to log in")
 	}
 	return user, nil
@@ -92,7 +96,7 @@ func NeedAuth(rw http.ResponseWriter, challenge []byte) error {
 
 // Check checks username and password
 func Check(user, passwd string) bool {
-	if user != "" && passwd != "" && conf.User[user] == passwd {
+	if user != "" && passwd != "" && config.RuntimeViper.GetStringMapString("server.user")[user] == passwd {
 		return true
 	} else {
 		return false

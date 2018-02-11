@@ -4,11 +4,12 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/mediocregopher/radix.v2/pool"
 	"github.com/mediocregopher/radix.v2/redis"
 	"github.com/panjf2000/goproxy/interface"
-	"net/http"
-	"time"
 )
 
 func MD5Uri(uri string) string {
@@ -19,14 +20,14 @@ type ConnCachePool struct {
 	pool *pool.Pool
 }
 
-func HeartBeat(p *pool.Pool, intervalTime int) {
-	go func() {
-		for {
-			p.Cmd("PING")
-			time.Sleep(time.Duration(intervalTime) * time.Second)
-		}
-	}()
-}
+//func HeartBeat(p *pool.Pool, intervalTime int) {
+//	go func() {
+//		for {
+//			p.Cmd("PING")
+//			time.Sleep(time.Duration(intervalTime) * time.Second)
+//		}
+//	}()
+//}
 
 func NewCachePool(address, password string, cap int) *ConnCachePool {
 	p, err := pool.NewCustom("tcp", address, cap, func(network, addr string) (*redis.Client, error) {

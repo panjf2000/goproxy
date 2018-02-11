@@ -3,19 +3,23 @@ package handlers
 import (
 	_ "bufio"
 	"bytes"
-	"github.com/Sirupsen/logrus"
-	"github.com/panjf2000/goproxy/interface"
-	"github.com/panjf2000/goproxy/tool"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"path"
+
+	"github.com/Sirupsen/logrus"
+	"github.com/panjf2000/goproxy/config"
+	"github.com/panjf2000/goproxy/interface"
+	"github.com/panjf2000/goproxy/tool"
 )
 
 var cachePool api.CachePool
 var cacheLog *logrus.Logger
 
 func init() {
-	cacheLog, _ = tool.InitLog("logs/cache.log")
+	logPath := config.RuntimeViper.GetString("server.log_path")
+	cacheLog, _ = tool.InitLog(path.Join(logPath, "cache.log"))
 }
 
 func RegisterCachePool(c api.CachePool) {

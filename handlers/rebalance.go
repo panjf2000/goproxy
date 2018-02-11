@@ -1,15 +1,17 @@
 package handlers
 
 import (
-	"github.com/panjf2000/goproxy/tool"
 	"math/rand"
 	"net"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/lafikl/liblb/bounded"
 	"github.com/lafikl/liblb/p2c"
 	"github.com/lafikl/liblb/r2"
-	"github.com/lafikl/liblb/bounded"
+	"github.com/panjf2000/goproxy/config"
+	"github.com/panjf2000/goproxy/tool"
 )
 
 var r2LB *r2.R2
@@ -20,7 +22,8 @@ var serverNodes []string
 
 func init() {
 	memcacheServers = make(map[string]int)
-	for _, val := range conf.ProxyPass {
+	proxyPasses := config.RuntimeViper.GetStringSlice("server.proxyPasses")
+	for _, val := range proxyPasses {
 		if tool.IsHost(val) {
 			memcacheServers[val] = 1
 			serverNodes = append(serverNodes, val)
@@ -42,7 +45,7 @@ func init() {
 }
 
 func (ps *ProxyServer) Done(req *http.Request) {
-	switch conf.Mode {
+	switch config.RuntimeViper.GetInt("server.inverse_mode") {
 	case 2:
 		p2cLB.Done(req.Host)
 	case 3:
@@ -54,7 +57,7 @@ func (ps *ProxyServer) Done(req *http.Request) {
 //ReverseHandler handles request for reverse proxy.
 //处理反向代理请求
 func (ps *ProxyServer) LoadBalancing(req *http.Request) {
-	if conf.Reverse == true {
+	if config.RuntimeViper.GetBool("server.reverse") {
 		//用于反向代理，负载均衡
 		ps.loadBalancing(req)
 	}
@@ -64,7 +67,8 @@ func (ps *ProxyServer) LoadBalancing(req *http.Request) {
 //处理反向代理负载均衡请求
 func (ps *ProxyServer) loadBalancing(req *http.Request) {
 	var proxyHost string
-	switch conf.Mode {
+	mode := config.RuntimeViper.GetInt("server.inverse_mode")
+	switch mode {
 	case 0:
 		// 随机选取一个负载均衡的服务器
 		index := rand.Intn(len(serverNodes))

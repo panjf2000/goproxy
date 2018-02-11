@@ -3,13 +3,14 @@
 title = "TOML config for goproxy"
 
 [server]
-port = 8080
+port = ":8080"
 reverse = true
-proxy_pass = ["127.0.0.1:6000", "127.0.0.1:7000", "127.0.0.1:8000", "127.0.0.1:9000"]
+proxyPasses = ["127.0.0.1:6000", "127.0.0.1:7000", "127.0.0.1:8000", "127.0.0.1:9000"]
 inverse_mode = 2
 auth = false
 cache = true
 redis_host = "127.0.0.1:6379"
+redis_pass = "redis_pass"
 cache_timeout = 60
 log = 1
 log_path = "./"
