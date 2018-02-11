@@ -5,7 +5,7 @@ title = "TOML config for goproxy"
 [server]
 port = ":8080"
 reverse = true
-proxyPasses = ["127.0.0.1:6000", "127.0.0.1:7000", "127.0.0.1:8000", "127.0.0.1:9000"]
+proxy_pass = ["127.0.0.1:6000", "127.0.0.1:7000", "127.0.0.1:8000", "127.0.0.1:9000"]
 inverse_mode = 2
 auth = false
 cache = true

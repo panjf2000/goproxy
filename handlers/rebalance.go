@@ -22,7 +22,7 @@ var serverNodes []string
 
 func init() {
 	memcacheServers = make(map[string]int)
-	proxyPasses := config.RuntimeViper.GetStringSlice("server.proxyPasses")
+	proxyPasses := config.RuntimeViper.GetStringSlice("server.proxy_pass")
 	for _, val := range proxyPasses {
 		if tool.IsHost(val) {
 			memcacheServers[val] = 1

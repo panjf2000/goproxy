@@ -1,3 +1,7 @@
+# 2018.02.11更新
+## 优化server的config管理
+>使用viper库和toml文件来管理server的配置信息，并且实现热加载，修改配置文件后实时生效，无需重启server。
+
 # 2017.07.22项目更新
 ## 新增4种负载均衡算法：
 * 轮询（Round Robin）法
@@ -43,45 +47,38 @@ cron（golang实现的一个crontab）
 2. go build
 
 ## 4.运行
-先配置config.json配置文件，一个典型的例子如下：
+先配置cfg.toml 配置文件，cfg.toml配置文件默认存放路径为/etc/proxy/cfg.toml,请在该目录预先置放一个cfg.toml配置文件，一个典型的例子如下：
 ```
-{
-  "port": ":8080",
-  "reverse": true,
-  "proxyPasses": [
-    "127.0.0.1:80^10",
-    "127.0.0.1:88^5",
-    "127.0.0.1:8088^2",
-    "127.0.0.1:8888"
-  ],
-  "mode": 0,
-  "auth": false,
-  "cache": true,
-  "redis_host": "127.0.0.1:6379",
-  "redis_passwd": "redis_secret",
-  "cache_timeout": 60,
-  "log": 1,
-  "admin": {
-    "Admin": "root"
-  },
-  "user": {
-    "agent": "proxy"
-  }
-}
+[server]
+port = ":8080"
+reverse = true
+proxy_pass = ["127.0.0.1:6000", "127.0.0.1:7000", "127.0.0.1:8000", "127.0.0.1:9000"]
+inverse_mode = 2
+auth = false
+cache = true
+redis_host = "127.0.0.1:6379"
+redis_pass = "redis_pass"
+cache_timeout = 60
+log = 1
+log_path = "./logs"
+admin = {"admin"="root"}
+user = {"agent"="proxy"}
 
 ```
 
 ### config释义：
 - port：代理服务器的监听端口
 - reverse：设置反向代理，值为true或者false
-- proxyPasses：反向代理目标服务器地址列表，如["127.0.0.1:80^10","127.0.0.1:88^5","127.0.0.1:8088^2","127.0.0.1:8888"]，目前支持设置服务器权重，依权重优先转发请求
-- mode：设置负载策略，即选择转发的服务器，目前支持模式：0-随机挑选一个服务器； 1-轮询法（加权轮询）； 2-p2c负载均衡算法； 3-IP HASH模式，根据client ip用hash ring择取服务器； 4-边界一致性哈希算法
+- proxy_pass：反向代理目标服务器地址列表，如["127.0.0.1:80^10","127.0.0.1:88^5","127.0.0.1:8088^2","127.0.0.1:8888"]，目前支持设置服务器权重，依权重优先转发请求
+- inverse_mode：设置负载策略，即选择转发的服务器，目前支持模式：0-随机挑选一个服务器； 1-轮询法（加权轮询）； 2-p2c负载均衡算法； 3-IP HASH模式，根据client ip用hash ring择取服务器； 4-边界一致性哈希算法
 - auth：开启代理认证，值为true或者false
 - cache：是否开启缓存（缓存response），值为true或者false
 - redis_host：缓存模块的redis host
-- redis_passwd：redis密码
+- redis_pass：redis密码
 - cache_timeout：redis缓存response的刷新时间，以分钟为单位
 - log：设置打log的level,1时level为Debug，0时为info
+- log_path：设置存放log的路径
+- admin：置空
 - user：代理服务器的http authentication 用户
 
   
