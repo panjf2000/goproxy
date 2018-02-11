@@ -14,6 +14,8 @@ func IsReqCache(resp *http.Request) bool {
 	} else if len(cacheControl) > 0 {
 		if strings.Index(cacheControl, "private") != -1 ||
 			strings.Index(cacheControl, "no-cache") != -1 ||
+			strings.Index(cacheControl, "no-store") != -1 ||
+			strings.Index(cacheControl, "must-revalidate") != -1 ||
 			(strings.Index(cacheControl, "max-age") == -1 &&
 				strings.Index(cacheControl, "s-maxage") == -1 &&
 				resp.Header.Get("Etag") == "" &&
@@ -23,8 +25,8 @@ func IsReqCache(resp *http.Request) bool {
 		}
 
 	} else if len(contentType) > 0 {
-		if strings.Index(contentType, "application") != -1 ||
-			strings.Index(contentType, "video") != -1 ||
+		if strings.Index(contentType, "video") != -1 ||
+			strings.Index(contentType, "image") != -1 ||
 			strings.Index(contentType, "audio") != -1 {
 			return false
 		}
@@ -42,6 +44,8 @@ func IsRespCache(resp *http.Response) bool {
 	} else if len(cacheControl) > 0 {
 		if strings.Index(cacheControl, "private") != -1 ||
 			strings.Index(cacheControl, "no-cache") != -1 ||
+			strings.Index(cacheControl, "no-store") != -1 ||
+			strings.Index(cacheControl, "must-revalidate") != -1 ||
 			(strings.Index(cacheControl, "max-age") == -1 &&
 				strings.Index(cacheControl, "s-maxage") == -1 &&
 				resp.Header.Get("Etag") == "" &&
@@ -51,8 +55,8 @@ func IsRespCache(resp *http.Response) bool {
 		}
 
 	} else if len(contentType) > 0 {
-		if strings.Index(contentType, "application") != -1 ||
-			strings.Index(contentType, "video") != -1 ||
+		if strings.Index(contentType, "video") != -1 ||
+			strings.Index(contentType, "image") != -1 ||
 			strings.Index(contentType, "audio") != -1 {
 			return false
 		}
