@@ -13,6 +13,6 @@ redis_host = "127.0.0.1:6379"
 redis_pass = "redis_pass"
 cache_timeout = 60
 log = 1
-log_path = "./"
+log_path = "./logs"
 admin = {"admin"="root"}
 user = {"agent"="proxy"}
