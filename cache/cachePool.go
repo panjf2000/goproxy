@@ -48,8 +48,9 @@ func NewCachePool(address, password string, cap int) *ConnCachePool {
 
 	}
 
-	// keep redis pool alive
-	HeartBeat(p, 10)
+	// keep redis pool alive, according to the author of radix.v2,it's unnecessary to this anymore in the new version
+	// cuz it will do it automatically.
+	//HeartBeat(p, 10)
 
 	return &ConnCachePool{pool: p}
 
