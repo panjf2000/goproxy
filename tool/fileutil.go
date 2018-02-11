@@ -13,10 +13,11 @@ package tool
 
 import (
 	"fmt"
-	"github.com/Sirupsen/logrus"
-	"github.com/robfig/cron"
 	"os"
 	"time"
+
+	"github.com/Sirupsen/logrus"
+	"github.com/robfig/cron"
 )
 
 // 判断给定文件名是否是一个目录
