@@ -62,8 +62,8 @@ redis_pass = "redis_pass"
 cache_timeout = 60
 log = 1
 log_path = "./logs"
-admin = {"admin"="root"}
-user = {"agent"="proxy"}
+admin = {admin="root"}
+user = {agent="proxy"}
 
 ```
 
