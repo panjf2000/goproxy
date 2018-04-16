@@ -44,13 +44,15 @@ redis server的崩溃，本人向radix.v2的作者提交了一个pr，但作者�
 >* 获取：git clone https://github.com/panjf2000/goproxy.git
 
 ## 2.安装项目依赖的golang库：
-logrus（一个开源的高性能golang日志库）;
-~~radix.v2（一个Redis 官方推荐的使用golang实现的redis client，轻量级、实现优雅）;~~
-redigo（redis官方推荐client）
-cron（golang实现的一个crontab） 
->logrus安装：go get github.com/Sirupsen/logrus  
+- logrus（一个开源的高性能golang日志库）;
+- ~~radix.v2（一个Redis 官方推荐的使用golang实现的redis client，轻量级、实现优雅）;~~
+- redigo（redis官方推荐client）
+- cron（golang实现的一个crontab）
+
+>logrus安装：go get github.com/Sirupsen/logrus
 
 >~~radix.v2安装：go get github.com/mediocregopher/radix.v2/…~~
+
 >redigo安装：go get github.com/gomodule/redigo/redis
 
 **另外，该项目需要redis数据库的支持，所以要有一个redis环境**
