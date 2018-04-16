@@ -1,3 +1,10 @@
+# 2018.04.16更新
+## 更换redis client
+redis客户端由原来的radix.v2库更换为redigo库
+更换理由：
+>radix.v2库的连接池有一个潜在问题是，如果同时初始化大量的连接，即使超过了pool的size，radix依然会不断申请新的redis连接，如果在极端情况下，大量的连接建立可能会导致
+redis server的崩溃，本人向radix.v2的作者提交了一个pr，但作者并不接受，且说是设计如此...无力吐槽，故迁移到有连接池保护的redigo。
+
 # 2018.02.11更新
 ## 优化server的config管理
 >使用viper库和toml文件来管理server的配置信息，并且实现热加载，修改配置文件后实时生效，无需重启server。
