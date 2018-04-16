@@ -51,9 +51,7 @@ func NewCachePool(address, password string, idleTimeout, cap, maxIdle int) *Conn
 }
 
 func (c *ConnCachePool) Get(uri string) api.Cache {
-	//log.Println("get cahche of ", uri)
 	if respCache := c.get(MD5Uri(uri)); respCache != nil {
-		//log.Println(*cacheResp)
 		return respCache
 	}
 	return nil
@@ -63,13 +61,10 @@ func (c *ConnCachePool) get(md5Uri string) *HttpCache {
 	conn := c.pool.Get()
 	defer conn.Close()
 
-	//b, err := redis.Bytes(conn.Do("GET", md5Uri))
 	b, err := redis.Bytes(conn.Do("GET", md5Uri))
 	if err != nil || len(b) == 0 {
-		//log.Println(err)
 		return nil
 	}
-	//log.Println(string(b))
 	respCache := new(HttpCache)
 	json.Unmarshal(b, &respCache)
 	return respCache
@@ -110,7 +105,6 @@ func (c *ConnCachePool) CheckAndStore(uri string, req *http.Request, resp *http.
 	defer conn.Close()
 
 	_, err = conn.Do("MULTI")
-	//log.Println("successfully store cacheResp ", uri)
 	conn.Do("SET", md5Uri, b)
 	conn.Do("EXPIRE", md5Uri, respCache.maxAge)
 	_, err = conn.Do("EXEC")
