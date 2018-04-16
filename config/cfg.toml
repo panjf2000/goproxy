@@ -9,10 +9,18 @@ proxy_pass = ["127.0.0.1:6000", "127.0.0.1:7000", "127.0.0.1:8000", "127.0.0.1:9
 inverse_mode = 2
 auth = false
 cache = true
-redis_host = "127.0.0.1:6379"
-redis_pass = "redis_pass"
 cache_timeout = 60
 log = 1
 log_path = "./logs"
 admin = {"admin"="root"}
 user = {"agent"="proxy"}
+
+[redis]
+redis_host = "127.0.0.1:6379"
+redis_pass = "redis_pass"
+max_idle = 5
+idle_timeout = 10
+max_active = 10
+
+
+

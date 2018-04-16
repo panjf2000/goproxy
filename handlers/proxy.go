@@ -31,8 +31,9 @@ func init() {
 // NewProxyServer returns a new proxyserver.
 func NewProxyServer() *http.Server {
 	if config.RuntimeViper.GetBool("server.cache") {
-		RegisterCachePool(cache.NewCachePool(config.RuntimeViper.GetString("server.redis_host"),
-			config.RuntimeViper.GetString("server.redis_pass"), 10))
+		RegisterCachePool(cache.NewCachePool(config.RuntimeViper.GetString("redis.redis_host"),
+			config.RuntimeViper.GetString("redis.redis_pass"), config.RuntimeViper.GetInt("redis.idle_timeout"),
+			config.RuntimeViper.GetInt("redis.max_active"), config.RuntimeViper.GetInt("redis.max_idle")))
 	}
 
 	return &http.Server{

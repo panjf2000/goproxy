@@ -7,8 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mediocregopher/radix.v2/pool"
-	"github.com/mediocregopher/radix.v2/redis"
+	"github.com/garyburd/redigo/redis"
 	"github.com/panjf2000/goproxy/interface"
 )
 
@@ -17,43 +16,37 @@ func MD5Uri(uri string) string {
 }
 
 type ConnCachePool struct {
-	pool *pool.Pool
+	pool *redis.Pool
 }
 
-//func HeartBeat(p *pool.Pool, intervalTime int) {
-//	go func() {
-//		for {
-//			p.Cmd("PING")
-//			time.Sleep(time.Duration(intervalTime) * time.Second)
-//		}
-//	}()
-//}
+func NewCachePool(address, password string, idleTimeout, cap, maxIdle int) *ConnCachePool {
+	redisPool := &redis.Pool{
+		MaxActive:   cap,
+		MaxIdle:     maxIdle,
+		IdleTimeout: time.Duration(idleTimeout) * time.Second,
+		Wait:        true,
+		Dial: func() (redis.Conn, error) {
+			conn, err := redis.Dial("tcp", address)
+			if err != nil {
+				return nil, err
+			}
+			if _, err := conn.Do("AUTH", password); err != nil {
+				conn.Close()
+				return nil, err
+			}
+			return conn, err
+		},
+		TestOnBorrow: func(c redis.Conn, t time.Time) error {
+			_, err := c.Do("PING")
+			if err != nil {
+				panic(err)
+			}
+			return err
 
-func NewCachePool(address, password string, cap int) *ConnCachePool {
-	p, err := pool.NewCustom("tcp", address, cap, func(network, addr string) (*redis.Client, error) {
-		client, err := redis.Dial(network, addr)
-		if err != nil {
-			return nil, err
-		}
-		if err = client.Cmd("AUTH", password).Err; err != nil {
-			client.Close()
-			return nil, err
-		}
-		return client, nil
-	})
-	if err != nil {
-		panic(err)
-	}
-	n := p.Avail()
-	if n == 0 {
-
+		},
 	}
 
-	// keep redis pool alive, according to the author of radix.v2,it's unnecessary to this anymore in the new version
-	// cuz it will do it automatically.
-	//HeartBeat(p, 10)
-
-	return &ConnCachePool{pool: p}
+	return &ConnCachePool{pool: redisPool}
 
 }
 
@@ -67,11 +60,11 @@ func (c *ConnCachePool) Get(uri string) api.Cache {
 }
 
 func (c *ConnCachePool) get(md5Uri string) *HttpCache {
-	conn, _ := c.pool.Get()
-	defer c.pool.Put(conn)
+	conn := c.pool.Get()
+	defer conn.Close()
 
 	//b, err := redis.Bytes(conn.Do("GET", md5Uri))
-	b, err := conn.Cmd("GET", md5Uri).Bytes()
+	b, err := redis.Bytes(conn.Do("GET", md5Uri))
 	if err != nil || len(b) == 0 {
 		//log.Println(err)
 		return nil
@@ -87,10 +80,10 @@ func (c *ConnCachePool) Delete(uri string) {
 }
 
 func (c *ConnCachePool) delete(md5Uri string) {
-	conn, _ := c.pool.Get()
-	defer c.pool.Put(conn)
+	conn := c.pool.Get()
+	defer conn.Close()
 
-	if err := conn.Cmd("DEL", md5Uri).Err; err != nil {
+	if _, err := conn.Do("DEL", md5Uri); err != nil {
 		return
 	}
 	return
@@ -113,14 +106,14 @@ func (c *ConnCachePool) CheckAndStore(uri string, req *http.Request, resp *http.
 		return
 	}
 
-	conn, _ := c.pool.Get()
-	defer c.pool.Put(conn)
+	conn := c.pool.Get()
+	defer conn.Close()
 
-	err = conn.Cmd("MULTI").Err
+	_, err = conn.Do("MULTI")
 	//log.Println("successfully store cacheResp ", uri)
-	conn.Cmd("SET", md5Uri, b)
-	conn.Cmd("EXPIRE", md5Uri, respCache.maxAge)
-	err = conn.Cmd("EXEC").Err
+	conn.Do("SET", md5Uri, b)
+	conn.Do("EXPIRE", md5Uri, respCache.maxAge)
+	_, err = conn.Do("EXEC")
 	if err != nil {
 		//log.Println(err)
 		return
