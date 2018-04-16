@@ -71,30 +71,41 @@ proxy_pass = ["127.0.0.1:6000", "127.0.0.1:7000", "127.0.0.1:8000", "127.0.0.1:9
 inverse_mode = 2
 auth = false
 cache = true
-redis_host = "127.0.0.1:6379"
-redis_pass = "redis_pass"
 cache_timeout = 60
 log = 1
 log_path = "./logs"
-admin = {admin="root"}
-user = {agent="proxy"}
+admin = {"admin"="root"}
+user = {"agent"="proxy"}
+
+[redis]
+redis_host = "127.0.0.1:6379"
+redis_pass = "redis_pass"
+max_idle = 5
+idle_timeout = 10
+max_active = 10
 
 ```
 
 ### config释义：
+#### [server]
 - port：代理服务器的监听端口
 - reverse：设置反向代理，值为true或者false
 - proxy_pass：反向代理目标服务器地址列表，如["127.0.0.1:80^10","127.0.0.1:88^5","127.0.0.1:8088^2","127.0.0.1:8888"]，目前支持设置服务器权重，依权重优先转发请求
 - inverse_mode：设置负载策略，即选择转发的服务器，目前支持模式：0-随机挑选一个服务器； 1-轮询法（加权轮询）； 2-p2c负载均衡算法； 3-IP HASH模式，根据client ip用hash ring择取服务器； 4-边界一致性哈希算法
 - auth：开启代理认证，值为true或者false
 - cache：是否开启缓存（缓存response），值为true或者false
-- redis_host：缓存模块的redis host
-- redis_pass：redis密码
 - cache_timeout：redis缓存response的刷新时间，以分钟为单位
 - log：设置打log的level,1时level为Debug，0时为info
 - log_path：设置存放log的路径
 - admin：置空
 - user：代理服务器的http authentication 用户
+
+#### [redis]
+- redis_host：缓存模块的redis host
+- redis_pass：redis密码
+- max_idle：redis连接池最大空闲连接数
+- idle_timeout：空闲连接超时关闭设置
+- max_active：连接池容量
 
   
   
