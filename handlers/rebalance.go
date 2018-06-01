@@ -71,7 +71,7 @@ func (ps *ProxyServer) loadBalancing(req *http.Request) {
 	switch mode {
 	case 0:
 		// 随机选取一个负载均衡的服务器
-		index := rand.Intn(len(serverNodes))
+		index := tool.GenRandom(0, len(serverNodes), 1)[0]
 		proxyHost = serverNodes[index]
 	case 1:
 		// 轮询法选择反向服务器，支持权重
