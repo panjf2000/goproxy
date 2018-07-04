@@ -13,7 +13,6 @@ package test
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"testing"
