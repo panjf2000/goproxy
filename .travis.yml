@@ -10,7 +10,7 @@ install:
   - go get github.com/gomodule/redigo/redis
   - go get github.com/lafikl/liblb
   - go get github.com/fsnotify/fsnotify
-  - go get github.com/garyburd/redigo
+  - go get github.com/gomodule/redigo/redis
   - go get github.com/robfig/cron
   - go get github.com/spf13/viper
   - go get github.com/parnurzeal/gorequest
