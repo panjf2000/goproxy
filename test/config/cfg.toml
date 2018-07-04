@@ -1,0 +1,26 @@
+# toml file for goproxy
+
+title = "TOML config for goproxy"
+
+[server]
+port = ":80"
+reverse = true
+proxy_pass = ["127.0.0.1:6000", "127.0.0.1:7000", "127.0.0.1:8000", "127.0.0.1:9000"]
+inverse_mode = 2
+auth = false
+cache = true
+cache_timeout = 60
+log = 1
+log_path = "./logs"
+admin = {"admin"="root"}
+user = {"agent"="proxy"}
+
+[redis]
+redis_host = "localhost:6379"
+redis_pass = ""
+max_idle = 5
+idle_timeout = 10
+max_active = 10
+
+
+
