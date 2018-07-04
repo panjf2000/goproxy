@@ -7,6 +7,7 @@ go:
   - master
 
 install:
+  - go get github.com/Sirupsen/logrus
   - go get github.com/gomodule/redigo/redis
   - go get github.com/lafikl/liblb
   - go get github.com/fsnotify/fsnotify

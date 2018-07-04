@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/panjf2000/goproxy/config"
@@ -44,21 +45,24 @@ func TestServer(t *testing.T) {
 
 	resp, body, errs := gorequest.New().Get("http://127.0.0.1/test_proxy").Param("get_req", "Hello World!").End()
 	if errs != nil {
-		log.Fatalln(errs)
+		t.Log(errs)
+		os.Exit(-1)
 	}
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("response status err, status code:%d\n", resp.StatusCode)
+		t.Logf("response status err, status code:%d\n", resp.StatusCode)
+		os.Exit(-1)
 	}
-	log.Printf("{GET} response: %s\n", body)
+	t.Logf("{GET} response: %s\n", body)
 
 	resp, body, errs = gorequest.New().Post("http://127.0.0.1/test_proxy").Send(`{"post_req": "Hello World!"}`).End()
 
 	if errs != nil {
-		log.Fatalln(errs)
+		t.Log(errs)
+		os.Exit(-1)
 	}
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("response status err, status code:%d\n", resp.StatusCode)
+		t.Logf("response status err, status code:%d\n", resp.StatusCode)
 	}
-	log.Printf("{POST} response: %s\n", body)
+	t.Logf("{POST} response: %s\n", body)
 
 }
