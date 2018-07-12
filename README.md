@@ -79,7 +79,7 @@ cache = true
 cache_timeout = 60
 log = 1
 log_path = "./logs"
-user = {"agent"="proxy"}
+user = { agent = "proxy" }
 
 [redis]
 redis_host = "127.0.0.1:6379"
