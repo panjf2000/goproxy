@@ -1,0 +1,23 @@
+language: go
+
+go:
+  - "1.8.x"
+  - "1.9.x"
+  - "1.10.x"
+  - master
+
+install:
+  - go get github.com/Sirupsen/logrus
+  - go get github.com/gomodule/redigo/redis
+  - go get github.com/lafikl/liblb
+  - go get github.com/fsnotify/fsnotify
+  - go get github.com/gomodule/redigo/redis
+  - go get github.com/robfig/cron
+  - go get github.com/spf13/viper
+  - go get github.com/parnurzeal/gorequest
+
+services:
+  - redis
+
+script:
+  - go test -v ./test/...

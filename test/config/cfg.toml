@@ -12,7 +12,6 @@ cache = true
 cache_timeout = 60
 log = 1
 log_path = "./logs"
-user = {"agent"="proxy"}
 
 [redis]
 redis_host = "localhost:6379"
