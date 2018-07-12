@@ -28,7 +28,7 @@ func init() {
 
 }
 
-// NewProxyServer returns a new proxyserver.
+// NewProxyServer returns a new proxy server.
 func NewProxyServer() *http.Server {
 	if config.RuntimeViper.GetBool("server.cache") {
 		RegisterCachePool(cache.NewCachePool(config.RuntimeViper.GetString("redis.redis_host"),
