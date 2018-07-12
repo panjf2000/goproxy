@@ -66,7 +66,7 @@ func (c *ConnCachePool) get(md5Uri string) *HttpCache {
 		return nil
 	}
 	respCache := new(HttpCache)
-	json.Unmarshal(b, &respCache)
+	json.Unmarshal(b, respCache)
 	return respCache
 }
 
