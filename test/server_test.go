@@ -18,6 +18,7 @@ import (
 	"log"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/panjf2000/goproxy/config"
 	"github.com/panjf2000/goproxy/handler"
@@ -36,6 +37,7 @@ func init() {
 	go func() {
 		log.Fatalln(server.ListenAndServe())
 	}()
+	time.Sleep(5 * time.Second)
 }
 
 func revRequest(w http.ResponseWriter, r *http.Request) {
