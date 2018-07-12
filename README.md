@@ -1,5 +1,7 @@
 <div align="center"><img src="https://github.com/panjf2000/goproxy/blob/master/goproxy_logo.png"/></div>
 
+[![Build Status](https://travis-ci.org/panjf2000/goproxy.svg?branch=master)](https://travis-ci.org/panjf2000/goproxy)
+
 # 2018.04.16更新
 ## 更换redis client
 redis客户端由原来的radix.v2库更换为redigo库
