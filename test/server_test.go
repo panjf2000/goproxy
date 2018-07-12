@@ -54,17 +54,6 @@ func revRequest(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//func revRequest(w http.ResponseWriter, r *http.Request) {
-//	switch r.Method {
-//	case "GET":
-//		fmt.Fprint(w, "{GET} return: "+r.FormValue("get_req"))
-//	case "POST":
-//		fmt.Fprint(w, "{POST} return: "+r.PostFormValue("post_req"))
-//	default:
-//		fmt.Fprint(w, "defalut return: nil")
-//	}
-//}
-
 func TestServer(t *testing.T) {
 	resp, body, errs := gorequest.New().Get("http://127.0.0.1:8080/test_proxy").Param("get_req", "Hello World!").End()
 	if errs != nil {
