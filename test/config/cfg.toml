@@ -3,7 +3,7 @@
 title = "TOML config for goproxy"
 
 [server]
-port = ":80"
+port = ":8080"
 reverse = true
 proxy_pass = ["127.0.0.1:6000"]
 inverse_mode = 2
