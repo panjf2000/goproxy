@@ -12,7 +12,10 @@
 package test
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"testing"
 
@@ -21,26 +24,48 @@ import (
 	"github.com/parnurzeal/gorequest"
 )
 
+func init() {
+	http.HandleFunc("/test_proxy", revRequest)
+	for _, addr := range config.RuntimeViper.GetStringSlice("server.proxy_pass") {
+		go func() {
+			log.Fatalln(http.ListenAndServe(addr, nil))
+		}()
+	}
+
+	server := handler.NewProxyServer()
+	go func() {
+		log.Fatalln(server.ListenAndServe())
+	}()
+}
+
 func revRequest(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		fmt.Fprint(w, "{GET} return: "+r.FormValue("get_req"))
 	case "POST":
-		fmt.Fprint(w, "{POST} return: "+r.PostFormValue("post_req"))
+		b, _ := ioutil.ReadAll(r.Body)
+		defer r.Body.Close()
+		var m map[string]interface{}
+		json.Unmarshal(b, &m)
+		postParam, _ := m["post_req"].(string)
+		fmt.Fprint(w, "{POST} return: "+postParam)
 	default:
 		fmt.Fprint(w, "defalut return: nil")
 	}
 }
 
+//func revRequest(w http.ResponseWriter, r *http.Request) {
+//	switch r.Method {
+//	case "GET":
+//		fmt.Fprint(w, "{GET} return: "+r.FormValue("get_req"))
+//	case "POST":
+//		fmt.Fprint(w, "{POST} return: "+r.PostFormValue("post_req"))
+//	default:
+//		fmt.Fprint(w, "defalut return: nil")
+//	}
+//}
+
 func TestServer(t *testing.T) {
-	http.HandleFunc("/test_proxy", revRequest)
-	for _, addr := range config.RuntimeViper.GetStringSlice("server.proxy_pass") {
-		go http.ListenAndServe(addr, nil)
-	}
-
-	server := handler.NewProxyServer()
-	go server.ListenAndServe()
-
 	resp, body, errs := gorequest.New().Get("http://127.0.0.1/test_proxy").Param("get_req", "Hello World!").End()
 	if errs != nil {
 		t.Fatal(errs)
