@@ -76,7 +76,6 @@ cache = true
 cache_timeout = 60
 log = 1
 log_path = "./logs"
-admin = {"admin"="root"}
 user = {"agent"="proxy"}
 
 [redis]
@@ -99,7 +98,6 @@ max_active = 10
 - cache_timeout：redis缓存response的刷新时间，以分钟为单位
 - log：设置打log的level,1时level为Debug，0时为info
 - log_path：设置存放log的路径
-- admin：置空
 - user：代理服务器的http authentication 用户
 
 #### [redis]
