@@ -8,7 +8,7 @@ import (
 type CachePool interface {
 	Get(uri string) Cache
 	Delete(uri string)
-	CheckAndStore(uri string, req *http.Request,resp *http.Response)
+	CheckAndStore(uri string, req *http.Request, resp *http.Response)
 	Clear(d time.Duration)
 }
 

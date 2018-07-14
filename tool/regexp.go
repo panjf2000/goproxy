@@ -49,7 +49,7 @@ const (
 		`(:\d{1,4})?` // 端口
 
 	weightHostPattern = "(" + ip4Pattern + "|(" + domainPattern + "))" + // IP或域名
-	`(:\d{1,4}\^\d+)?` // 端口
+		`(:\d{1,4}\^\d+)?` // 端口
 
 	// 匹配URL
 	urlPattern = `((https|http|ftp|rtsp|mms)?://)?` + // 协议
@@ -62,15 +62,15 @@ const (
 )
 
 var (
-	Email    = regexpCompile(emailPattern)
-	Ip4      = regexpCompile(ip4Pattern)
-	Ip6      = regexpCompile(ip6Pattern)
-	Ip       = regexpCompile(ipPattern)
-	Url      = regexpCompile(urlPattern)
-	CnPhone  = regexpCompile(cnPhonePattern)
-	CnMobile = regexpCompile(cnMobilePattern)
-	CnTel    = regexpCompile(cnTelPattern)
-	Host     = regexpCompile(hostPattern)
+	Email      = regexpCompile(emailPattern)
+	Ip4        = regexpCompile(ip4Pattern)
+	Ip6        = regexpCompile(ip6Pattern)
+	Ip         = regexpCompile(ipPattern)
+	Url        = regexpCompile(urlPattern)
+	CnPhone    = regexpCompile(cnPhonePattern)
+	CnMobile   = regexpCompile(cnMobilePattern)
+	CnTel      = regexpCompile(cnTelPattern)
+	Host       = regexpCompile(hostPattern)
 	WeightHost = regexpCompile(weightHostPattern)
 )
 

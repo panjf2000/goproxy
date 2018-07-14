@@ -2,8 +2,8 @@
 @version: 1.0
 @author: allanpan
 @license:  Apache Licence
-@contact: panjf2000@gmail.com  
-@site: 
+@contact: panjf2000@gmail.com
+@site:
 @file: server_test.go
 @time: 2018/7/4 15:01
 @tag: 1,2,3
