@@ -3,6 +3,7 @@ package handler
 import (
 	_ "bufio"
 	"io"
+	"log"
 	"net"
 	"net/http"
 	"path"
@@ -42,6 +43,7 @@ func NewProxyServer() *http.Server {
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
+		ErrorLog: log.New(proxyLog.Out, "[ERROR]", log.LstdFlags),
 	}
 }
 
