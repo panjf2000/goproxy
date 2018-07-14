@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path"
 
 	"github.com/Sirupsen/logrus"
@@ -19,6 +20,7 @@ var cacheLog *logrus.Logger
 
 func init() {
 	logPath := config.RuntimeViper.GetString("server.log_path")
+	os.MkdirAll(logPath, os.ModePerm)
 	cacheLog, _ = tool.InitLog(path.Join(logPath, "cache.log"))
 }
 

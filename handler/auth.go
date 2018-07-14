@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 
@@ -18,6 +19,7 @@ var authLog *logrus.Logger
 
 func init() {
 	logPath := config.RuntimeViper.GetString("server.log_path")
+	os.MkdirAll(logPath, os.ModePerm)
 	authLog, _ = tool.InitLog(path.Join(logPath, "auth.log"))
 
 }

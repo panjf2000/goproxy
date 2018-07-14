@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"path"
 	"time"
 
@@ -25,6 +26,7 @@ var proxyLog *logrus.Logger
 
 func init() {
 	logPath := config.RuntimeViper.GetString("server.log_path")
+	os.MkdirAll(logPath, os.ModePerm)
 	proxyLog, _ = tool.InitLog(path.Join(logPath, "proxy.log"))
 
 }
@@ -43,7 +45,7 @@ func NewProxyServer() *http.Server {
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
-		ErrorLog: log.New(proxyLog.Out, "[ERROR]", log.LstdFlags),
+		ErrorLog:       log.New(proxyLog.Out, "[ERROR]", log.LstdFlags),
 	}
 }
 
