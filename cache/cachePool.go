@@ -30,9 +30,11 @@ func NewCachePool(address, password string, idleTimeout, cap, maxIdle int) *Conn
 			if err != nil {
 				return nil, err
 			}
-			if _, err := conn.Do("AUTH", password); err != nil {
-				conn.Close()
-				return nil, err
+			if password != "" {
+				if _, err := conn.Do("AUTH", password); err != nil {
+					conn.Close()
+					return nil, err
+				}
 			}
 			return conn, err
 		},
@@ -45,7 +47,6 @@ func NewCachePool(address, password string, idleTimeout, cap, maxIdle int) *Conn
 
 		},
 	}
-
 	return &ConnCachePool{pool: redisPool}
 
 }
