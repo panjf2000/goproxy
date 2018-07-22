@@ -22,4 +22,4 @@ script:
   - go test -v ./test/...
 
 after_success:
-  - tail -n 1000 ./logs/*.log
+  - tail -n 1000 ./logs/*.log.*
