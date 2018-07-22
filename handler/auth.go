@@ -11,7 +11,6 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/panjf2000/goproxy/config"
 	"github.com/panjf2000/goproxy/tool"
-	_ "github.com/panjf2000/goproxy/tool"
 )
 
 var HTTP407 = []byte("HTTP/1.1 407 Proxy Authorization Required\r\nProxy-Authenticate: Basic realm=\"Secure Proxys\"\r\n\r\n")
@@ -36,16 +35,13 @@ func (ps *ProxyServer) Auth(rw http.ResponseWriter, req *http.Request) bool {
 			}).Error("Fail to log in!")
 			//ps.Browser = "Anonymous"
 			return false
-		} else {
-			authLog.Info("authentication is passed!")
-			return true
 		}
-	} else {
-		ps.Browser = "Anonymous"
+		authLog.Info("authentication is passed!")
 		return true
 	}
-
+	ps.Browser = "Anonymous"
 	return true
+
 }
 
 //Auth provides basic authorization for proxy server.
@@ -73,10 +69,9 @@ func (ps *ProxyServer) auth(rw http.ResponseWriter, req *http.Request) (string, 
 	if len(userPasswdPair) != 2 {
 		NeedAuth(rw, HTTP407)
 		return "", errors.New("fail to log in")
-	} else {
-		user = userPasswdPair[0]
-		passwd = userPasswdPair[1]
 	}
+	user = userPasswdPair[0]
+	passwd = userPasswdPair[1]
 	if Check(user, passwd) == false {
 		NeedAuth(rw, HTTP407)
 		return "", errors.New("fail to log in")

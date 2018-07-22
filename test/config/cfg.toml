@@ -16,7 +16,7 @@ user = { agent = "proxy" }
 
 [redis]
 redis_host = "localhost:6379"
-redis_pass = ""
+redis_pass = "pjf2000"
 max_idle = 5
 idle_timeout = 10
 max_active = 10

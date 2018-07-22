@@ -1,7 +1,6 @@
 package handler
 
 import (
-	_ "bufio"
 	"bytes"
 	"io"
 	"io/ioutil"
@@ -42,12 +41,11 @@ func (ps *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Request) {
 			}).Debug("Found cache!")
 			c.WriteTo(rw)
 			return
-		} else {
-			cacheLog.WithFields(logrus.Fields{
-				"request url": uri,
-			}).Debug("Delete cache!")
-			cachePool.Delete(uri)
 		}
+		cacheLog.WithFields(logrus.Fields{
+			"request url": uri,
+		}).Debug("Delete cache!")
+		cachePool.Delete(uri)
 	}
 
 	RmProxyHeaders(req)
@@ -87,7 +85,6 @@ func (ps *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Request) {
 }
 
 func CopyResponse(dest *http.Response, src *http.Response) {
-
 	*dest = *src
 	var bodyBytes []byte
 
