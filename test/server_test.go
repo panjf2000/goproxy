@@ -57,16 +57,18 @@ func revRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func TestServer(t *testing.T) {
-	resp, body, errs := gorequest.New().Get("http://127.0.0.1:8080/test_proxy").Param("get_req", "Hello World!").End()
-	if errs != nil {
-		t.Fatal(errs)
+	for range []int{1, 2, 3, 4, 5} {
+		resp, body, errs := gorequest.New().Get("http://127.0.0.1:8080/test_proxy").Param("get_req", "Hello World!").End()
+		if errs != nil {
+			t.Fatal(errs)
+		}
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("response status err, status code:%d\n", resp.StatusCode)
+		}
+		t.Logf("{GET} response: %s\n", body)
 	}
-	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("response status err, status code:%d\n", resp.StatusCode)
-	}
-	t.Logf("{GET} response: %s\n", body)
-
-	resp, body, errs = gorequest.New().Post("http://127.0.0.1:8080/test_proxy").Send(`{"post_req": "Hello World!"}`).End()
+	
+	resp, body, errs := gorequest.New().Post("http://127.0.0.1:8080/test_proxy").Send(`{"post_req": "Hello World!"}`).End()
 
 	if errs != nil {
 		t.Fatal(errs)
