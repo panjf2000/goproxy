@@ -2,6 +2,7 @@ package cache
 
 import (
 	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -12,7 +13,9 @@ import (
 )
 
 func MD5Uri(uri string) string {
-	return fmt.Sprintf("%x", md5.Sum([]byte(uri)))
+	ctx := md5.New()
+	ctx.Write([]byte(uri))
+	return hex.EncodeToString(ctx.Sum(nil))
 }
 
 type ConnCachePool struct {
