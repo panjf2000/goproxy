@@ -91,6 +91,11 @@ func (ps *ProxyServer) loadBalancing(req *http.Request) {
 	case 4:
 		// 边界一致性哈希算法选择反向服务器
 		proxyHost, _ = boundedLB.Balance(req.RemoteAddr)
+	default:
+		// 随机选取一个负载均衡的服务器
+		index := tool.GenRandom(0, len(serverNodes), 1)[0]
+		proxyHost = serverNodes[index]
+
 	}
 	req.Host = proxyHost
 	req.URL.Host = proxyHost
