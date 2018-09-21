@@ -6,6 +6,7 @@ title = "TOML config for goproxy"
 port = ":8080"
 reverse = true
 proxy_pass = ["127.0.0.1:6000"]
+# 0 - random, 1 - loop, 2 - power of two choices(p2c), 3 - hash, 4 - consistent hashing
 inverse_mode = 2
 auth = false
 cache = true
