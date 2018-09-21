@@ -65,6 +65,7 @@ func (ps *ProxyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	ps.LoadBalancing(req)
+	defer ps.Done(req)
 
 	if req.Method == "CONNECT" {
 		ps.HttpsHandler(rw, req)
@@ -73,7 +74,6 @@ func (ps *ProxyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	} else {
 		ps.HttpHandler(rw, req)
 	}
-	ps.Done(req)
 }
 
 //HttpHandler handles http connections.
