@@ -29,10 +29,10 @@ func init() {
 	RuntimeViper.AddConfigPath("/etc/proxy/") // path to look for the config file in
 	RuntimeViper.AddConfigPath("./config/")   // optionally look for config in the working directory
 	if err := RuntimeViper.ReadInConfig(); err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s", err))
+		panic(fmt.Errorf("fatal error config file: %s", err))
 	}
 	RuntimeViper.WatchConfig()
 	RuntimeViper.OnConfigChange(func(e fsnotify.Event) {
-		log.Printf("Config file changed:%s", e.Name)
+		log.Printf("config file changed:%s", e.Name)
 	})
 }
