@@ -30,7 +30,7 @@ func RegisterCachePool(c api.CachePool) {
 //CacheHandler handles "Get" request
 func (ps *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Request) {
 
-	var uri = req.RequestURI
+	uri := req.RequestURI
 
 	c := cachePool.Get(uri)
 

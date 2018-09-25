@@ -44,7 +44,7 @@ func isFileOrDir(filename string, decideDir bool) bool {
 }
 
 func CheckFileIsExist(filepath string) bool {
-	var exist = true
+	exist := true
 	if _, err := os.Stat(filepath); os.IsNotExist(err) {
 		exist = false
 	}
