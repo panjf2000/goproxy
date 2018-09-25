@@ -11,6 +11,7 @@ inverse_mode = 2
 auth = false
 cache = true
 cache_timeout = 60
+log = 1
 log_path = "./logs"
 user = { agent = "proxy" }
 
