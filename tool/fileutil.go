@@ -74,8 +74,8 @@ func InitLog(logpath string) (*logrus.Logger, error) {
 	spec := "0 0 1 * * *" // 1:00 am every day.
 	c := cron.New()
 	c.AddFunc(spec, func() {
-		cronLogpath := fmt.Sprintf("%s.%s", logpath, time.Now().Format("20060102"))
-		logger.Out, _ = os.OpenFile(cronLogpath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0660)
+		cronLogPath := fmt.Sprintf("%s.%s", logpath, time.Now().Format("20060102"))
+		logger.Out, _ = os.OpenFile(cronLogPath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0660)
 	})
 	c.Start()
 
