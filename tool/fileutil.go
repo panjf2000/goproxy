@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/panjf2000/goproxy/config"
 	"github.com/robfig/cron"
 )
 
@@ -62,7 +63,11 @@ func InitLog(logpath string) (*logrus.Logger, error) {
 	logger.Out = f
 
 	// Only log the warning severity or above.
-	logger.Level = logrus.DebugLevel
+	if config.RuntimeViper.GetInt("server.log") == 1 {
+		logger.Level = logrus.DebugLevel
+	} else {
+		logger.Level = logrus.InfoLevel
+	}
 	//logger.SetNoLock()
 
 	// set crontab task to generate a new log file with names ending in date-format suffix.
