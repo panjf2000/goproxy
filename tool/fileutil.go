@@ -12,6 +12,8 @@
 package tool
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"math/rand"
 	"os"
@@ -49,8 +51,8 @@ func CheckFileIsExist(filepath string) bool {
 	return exist
 }
 
-func InitLog(logpath string) (*logrus.Logger, error) {
-	newLogPath := fmt.Sprintf("%s.%s", logpath, time.Now().Format("20060102"))
+func InitLog(logPath string) (*logrus.Logger, error) {
+	newLogPath := fmt.Sprintf("%s.%s", logPath, time.Now().Format("20060102"))
 	logger := logrus.New()
 	// Log as JSON instead of the default ASCII formatter.
 	logger.Formatter = &logrus.TextFormatter{}
@@ -74,7 +76,7 @@ func InitLog(logpath string) (*logrus.Logger, error) {
 	spec := "0 0 1 * * *" // 1:00 am every day.
 	c := cron.New()
 	c.AddFunc(spec, func() {
-		cronLogPath := fmt.Sprintf("%s.%s", logpath, time.Now().Format("20060102"))
+		cronLogPath := fmt.Sprintf("%s.%s", logPath, time.Now().Format("20060102"))
 		logger.Out, _ = os.OpenFile(cronLogPath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0660)
 	})
 	c.Start()
@@ -112,4 +114,10 @@ func GenRandom(start int, end int, count int) []int {
 		}
 	}
 	return nums
+}
+
+func MD5Uri(uri string) string {
+	ctx := md5.New()
+	ctx.Write([]byte(uri))
+	return hex.EncodeToString(ctx.Sum(nil))
 }

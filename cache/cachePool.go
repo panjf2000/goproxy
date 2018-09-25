@@ -1,21 +1,14 @@
 package cache
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"encoding/json"
 	"net/http"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/panjf2000/goproxy/interface"
+	"github.com/panjf2000/goproxy/tool"
 )
-
-func MD5Uri(uri string) string {
-	ctx := md5.New()
-	ctx.Write([]byte(uri))
-	return hex.EncodeToString(ctx.Sum(nil))
-}
 
 type ConnCachePool struct {
 	pool *redis.Pool
@@ -54,7 +47,7 @@ func NewCachePool(address, password string, idleTimeout, cap, maxIdle int) *Conn
 }
 
 func (c *ConnCachePool) Get(uri string) api.Cache {
-	if respCache := c.get(MD5Uri(uri)); respCache != nil {
+	if respCache := c.get(tool.MD5Uri(uri)); respCache != nil {
 		return respCache
 	}
 	return nil
@@ -74,7 +67,7 @@ func (c *ConnCachePool) get(md5Uri string) *HttpCache {
 }
 
 func (c *ConnCachePool) Delete(uri string) {
-	c.delete(MD5Uri(uri))
+	c.delete(tool.MD5Uri(uri))
 }
 
 func (c *ConnCachePool) delete(md5Uri string) {
@@ -97,10 +90,9 @@ func (c *ConnCachePool) CheckAndStore(uri string, req *http.Request, resp *http.
 		return
 	}
 
-	md5Uri := MD5Uri(uri)
+	md5Uri := tool.MD5Uri(uri)
 	b, err := json.Marshal(respCache)
 	if err != nil {
-		//log.Println(err)
 		return
 	}
 
@@ -112,12 +104,11 @@ func (c *ConnCachePool) CheckAndStore(uri string, req *http.Request, resp *http.
 	conn.Do("EXPIRE", md5Uri, respCache.maxAge)
 	_, err = conn.Do("EXEC")
 	if err != nil {
-		//log.Println(err)
 		return
 	}
 
 }
 
-func (c *ConnCachePool) Clear(d time.Duration) {
-
-}
+//func (c *ConnCachePool) Clear(d time.Duration) {
+//
+//}
