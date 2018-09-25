@@ -10,6 +10,6 @@ import (
 func main() {
 	goproxy := handler.NewProxyServer()
 
-	log.Infof("start proxy server in port%s", config.RuntimeViper.GetString("server.port"))
+	log.Infof("start proxy server in port:%s", config.RuntimeViper.GetString("server.port"))
 	log.Fatal(goproxy.ListenAndServe())
 }
