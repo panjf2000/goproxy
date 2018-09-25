@@ -42,8 +42,8 @@ func NewProxyServer() *http.Server {
 	return &http.Server{
 		Addr:           config.RuntimeViper.GetString("server.port"),
 		Handler:        &ProxyServer{Travel: &http.Transport{Proxy: http.ProxyFromEnvironment, DisableKeepAlives: false}},
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
+		ReadTimeout:    time.Duration(config.RuntimeViper.GetInt("server.read_timeout")) * time.Second,
+		WriteTimeout:   time.Duration(config.RuntimeViper.GetInt("server.write_timeout")) * time.Second,
 		MaxHeaderBytes: 1 << 20,
 		ErrorLog:       log.New(proxyLog.Out, "[ERROR]", log.LstdFlags),
 	}
