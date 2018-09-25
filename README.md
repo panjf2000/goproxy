@@ -102,7 +102,7 @@ max_active = 10
 - auth：开启代理认证，值为true或者false
 - cache：是否开启缓存（缓存response），值为true或者false
 - cache_timeout：redis缓存response的刷新时间，以分钟为单位
-- log：设置打log的level,1时level为Debug，0时为info
+- log：设置log的level,值为1表示Debug，值为0表示info
 - log_path：设置存放log的路径
 - user：代理服务器的http authentication 用户
 
