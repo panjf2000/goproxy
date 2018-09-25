@@ -50,13 +50,13 @@ func CheckFileIsExist(filepath string) bool {
 }
 
 func InitLog(logpath string) (*logrus.Logger, error) {
-	newLogpath := fmt.Sprintf("%s.%s", logpath, time.Now().Format("20060102"))
+	newLogPath := fmt.Sprintf("%s.%s", logpath, time.Now().Format("20060102"))
 	logger := logrus.New()
 	// Log as JSON instead of the default ASCII formatter.
 	logger.Formatter = &logrus.TextFormatter{}
 
 	// Output to stderr instead of stdout, could also be a file.
-	f, err := os.OpenFile(newLogpath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0660)
+	f, err := os.OpenFile(newLogPath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0660)
 	if err != nil {
 		return nil, err
 	}
