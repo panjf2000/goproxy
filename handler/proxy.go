@@ -98,7 +98,7 @@ func (ps *ProxyServer) HttpHandler(rw http.ResponseWriter, req *http.Request) {
 	ClearHeaders(rw.Header())
 	CopyHeaders(rw.Header(), resp.Header)
 
-	rw.WriteHeader(resp.StatusCode) //写入响应状态
+	rw.WriteHeader(resp.StatusCode) // write the response status.
 
 	nr, err := io.Copy(rw, resp.Body)
 	if err != nil && err != io.EOF {

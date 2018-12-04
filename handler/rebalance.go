@@ -55,32 +55,30 @@ func (ps *ProxyServer) Done(req *http.Request) {
 }
 
 //ReverseHandler handles request for reverse proxy.
-//处理反向代理请求
 func (ps *ProxyServer) LoadBalancing(req *http.Request) {
 	if config.RuntimeViper.GetBool("server.reverse") {
-		//用于反向代理，负载均衡
 		ps.loadBalancing(req)
 	}
 }
 
 //ReverseHandler handles request for reverse proxy.
-//处理反向代理负载均衡请求
 func (ps *ProxyServer) loadBalancing(req *http.Request) {
 	var proxyHost string
 	mode := config.RuntimeViper.GetInt("server.inverse_mode")
 	switch mode {
 	case 0:
-		// 随机选取一个负载均衡的服务器
+		// Selects a back-end server base on randomized algorithm.
 		index := tool.GenRandom(0, len(serverNodes), 1)[0]
 		proxyHost = serverNodes[index]
 	case 1:
-		// 轮询法选择反向服务器，支持权重
+		// Selects a back-end server base on polling algorithm which supports weight.
 		proxyHost, _ = r2LB.Balance()
 	case 2:
-		// power of two choices (p2c)负载均衡算法选择反向服务器
+		// Selects a back-end server base on power of two choices (p2c) algorithm.
 		proxyHost, _ = p2cLB.Balance(req.RemoteAddr)
 	case 3:
-		// 根据客户端的IP算出一个HASH值，将请求分配到集群中的某一台服务器上, 依据配置文件中设置的每个服务器的权重进行负载均衡
+		// Calculates a HashCode using the client ip and forwards this request to a back-end server base on HashCode with
+		// weights in config file.
 		ring := tool.NewWithWeights(memcacheServers)
 		if clientIP, _, err := net.SplitHostPort(req.RemoteAddr); err == nil {
 			server, _ := ring.GetNode(clientIP)
@@ -89,10 +87,10 @@ func (ps *ProxyServer) loadBalancing(req *http.Request) {
 			proxyHost = serverNodes[rand.Intn(len(serverNodes))]
 		}
 	case 4:
-		// 边界一致性哈希算法选择反向服务器
+		// Selects a back-end server base on Bound Consistent Hashing algorithm.
 		proxyHost, _ = boundedLB.Balance(req.RemoteAddr)
 	default:
-		// 随机选取一个负载均衡的服务器
+		// Selects a back-end server base on randomized algorithm.
 		index := tool.GenRandom(0, len(serverNodes), 1)[0]
 		proxyHost = serverNodes[index]
 

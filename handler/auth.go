@@ -27,7 +27,7 @@ func init() {
 func (ps *ProxyServer) Auth(rw http.ResponseWriter, req *http.Request) bool {
 	var err error
 	if config.RuntimeViper.GetBool("server.auth") {
-		//代理服务器登入认证
+		// authentication for the proxy server
 		if ps.Browser, err = ps.auth(rw, req); err != nil {
 			authLog.Error("Fail to log in!")
 			authLog.WithFields(logrus.Fields{
