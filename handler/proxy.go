@@ -77,7 +77,6 @@ func (ps *ProxyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 }
 
 //HttpHandler handles http connections.
-//处理普通的http请求
 func (ps *ProxyServer) HttpHandler(rw http.ResponseWriter, req *http.Request) {
 	proxyLog.WithFields(logrus.Fields{
 		"request user":   ps.Browser,
@@ -117,8 +116,7 @@ func (ps *ProxyServer) HttpHandler(rw http.ResponseWriter, req *http.Request) {
 
 var HTTP200 = []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
 
-// HttpsHandler handles any connection which need connect method.
-// 处理https连接，主要用于CONNECT方法
+// HttpsHandler handles any connection which needs "connect" method.
 func (ps *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Request) {
 	proxyLog.WithFields(logrus.Fields{
 		"user": ps.Browser,
@@ -126,7 +124,7 @@ func (ps *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Request) {
 	}).Info("http user tried to connect host!")
 
 	hj, _ := rw.(http.Hijacker)
-	Client, _, err := hj.Hijack() //获取客户端与代理服务器的tcp连接
+	Client, _, err := hj.Hijack() // get the tcp connection between client and server.
 	if err != nil {
 		proxyLog.WithFields(logrus.Fields{
 			"user":        ps.Browser,
@@ -136,7 +134,7 @@ func (ps *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	Remote, err := net.Dial("tcp", req.URL.Host) //建立服务端和代理服务器的tcp连接
+	Remote, err := net.Dial("tcp", req.URL.Host) // establish the tcp connection between the client and server.
 	if err != nil {
 		proxyLog.WithFields(logrus.Fields{
 			"user":        ps.Browser,
