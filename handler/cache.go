@@ -68,7 +68,7 @@ func (ps *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Request) {
 	ClearHeaders(rw.Header())
 	CopyHeaders(rw.Header(), resp.Header)
 
-	rw.WriteHeader(resp.StatusCode) // write the response status.
+	rw.WriteHeader(resp.StatusCode) // writes the response status.
 
 	nr, err := io.Copy(rw, resp.Body)
 	if err != nil && err != io.EOF {
@@ -92,7 +92,7 @@ func CopyResponse(dest *http.Response, src *http.Response) {
 		bodyBytes, _ = ioutil.ReadAll(src.Body)
 	}
 
-	// Restore the io.ReadCloser to its original state
+	// Restores the io.ReadCloser to its original state
 	src.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 	dest.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 }

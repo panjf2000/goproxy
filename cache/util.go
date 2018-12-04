@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-//checks whether request ask to be stored as cache
+// IsReqCache checks whether request ask to be stored as cache
 func IsReqCache(req *http.Request) bool {
 	log.Printf("http request header:%v", req.Header)
 	cacheControl := req.Header.Get("Cache-Control")
@@ -37,7 +37,7 @@ func IsReqCache(req *http.Request) bool {
 	return true
 }
 
-//checks whether response can be stored as cache
+// IsRespCache checks whether response can be stored as cache
 func IsRespCache(resp *http.Response) bool {
 	log.Printf("http response header:%v", resp.Header)
 	cacheControl := resp.Header.Get("Cache-Control")

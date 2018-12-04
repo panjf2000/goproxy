@@ -98,7 +98,7 @@ func (ps *ProxyServer) HttpHandler(rw http.ResponseWriter, req *http.Request) {
 	ClearHeaders(rw.Header())
 	CopyHeaders(rw.Header(), resp.Header)
 
-	rw.WriteHeader(resp.StatusCode) // write the response status.
+	rw.WriteHeader(resp.StatusCode) // writes the response status.
 
 	nr, err := io.Copy(rw, resp.Body)
 	if err != nil && err != io.EOF {
@@ -124,7 +124,7 @@ func (ps *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Request) {
 	}).Info("http user tried to connect host!")
 
 	hj, _ := rw.(http.Hijacker)
-	Client, _, err := hj.Hijack() // get the tcp connection between client and server.
+	Client, _, err := hj.Hijack() // gets the tcp connection between client and server.
 	if err != nil {
 		proxyLog.WithFields(logrus.Fields{
 			"user":        ps.Browser,
@@ -134,7 +134,7 @@ func (ps *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	Remote, err := net.Dial("tcp", req.URL.Host) // establish the tcp connection between the client and server.
+	Remote, err := net.Dial("tcp", req.URL.Host) // establishes the tcp connection between the client and server.
 	if err != nil {
 		proxyLog.WithFields(logrus.Fields{
 			"user":        ps.Browser,

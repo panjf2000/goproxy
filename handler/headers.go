@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-// CopyHeaders copy headers from source to destination.
+// CopyHeaders copies headers from source to destination.
 // Nothing would be returned.
 func CopyHeaders(dst, src http.Header) {
 	for key, values := range src {
@@ -14,14 +14,14 @@ func CopyHeaders(dst, src http.Header) {
 	}
 }
 
-// ClearHeaders clear headers.
+// ClearHeaders clears headers.
 func ClearHeaders(headers http.Header) {
 	for key := range headers {
 		headers.Del(key)
 	}
 }
 
-// RmProxyHeaders remove Hop-by-hop headers.
+// RmProxyHeaders removes Hop-by-hop headers.
 func RmProxyHeaders(req *http.Request) {
 	req.RequestURI = ""
 	req.Header.Del("Proxy-Connection")

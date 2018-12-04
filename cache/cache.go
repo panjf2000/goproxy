@@ -125,7 +125,7 @@ func (c *HttpCache) WriteTo(rw http.ResponseWriter) (int, error) {
 
 }
 
-// CopyHeaders copy headers from source to destination.
+// CopyHeaders copies headers from source to destination.
 // Nothing would be returned.
 func CopyHeaders(dst, src http.Header) {
 	for key, values := range src {
