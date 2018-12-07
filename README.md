@@ -107,6 +107,8 @@ max_active = 10
 - log：设置log的level,值为1表示Debug，值为0表示info
 - log_path：设置存放log的路径
 - user：代理服务器的http authentication 用户
+- http_read_timeout：代理服务器读取http request的超时时间，一旦超过该时长，就会抛出异常
+- http_write_timeout：代理服务器转发后端真实服务器时写入http response的超时时间，一旦超过该时长，就会抛出异常
 
 #### [redis]
 - redis_host：缓存模块的redis host
