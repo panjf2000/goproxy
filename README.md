@@ -33,7 +33,7 @@ Reason：
 
 
 # goproxy
->goproxy is a load-balancing, reverse-proxy server implemented in go supporting cache( by redis); As a reverse-proxy server, it supports 4 algorithms: Randomized Algorithm, Weight Round Robin Algorithm, Power of Two Choices (P2C) Algorithm, IP Hash Algorithm, Consistent Hashing with Bounded Loads Algorithm, besides, goproxy can dominate the http requests: filtering and blocking specific requests and even rewriting them.
+>goproxy is a load-balancing, reverse-proxy server implemented in go, supporting cache( by redis). As a reverse-proxy server, it supports 4 algorithms: Randomized Algorithm, Weight Round Robin Algorithm, Power of Two Choices (P2C) Algorithm, IP Hash Algorithm, Consistent Hashing with Bounded Loads Algorithm, besides, goproxy can dominate the http requests: filtering and blocking specific requests and even rewriting them.
 >
 >Sometimes your program needs to call some third party API and wants to customize the responses from it, in that case, goproxy will be your great choice.
 
