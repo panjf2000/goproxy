@@ -53,7 +53,7 @@ Reason：
 
 ## 4.Configurations are stored in a json file which is convenient for users
 
-# How to use poroxy
+# How to use goproxy
 ## 1.Get source code
 
 >* Clone source of goproxy from github, [goproxy](https://github.com/panjf2000/goproxy)
