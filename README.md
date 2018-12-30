@@ -24,7 +24,7 @@ Reason：
 >Managing configurations in proxy server with [viper](https://github.com/spf13/viper) which supports eager Loading and means it will take effect immediately right after you update the configuration file. 
 
 # Changelog in 22/07/2017
-## Add 4 new algorithms in goproxy for load balancing:
+## Add 4 new algorithms into goproxy for load balancing:
 
 * Round Robin Algorithm
 * Weight Round Robin Algorithm
