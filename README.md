@@ -39,7 +39,7 @@ Reason：
 
 # Features：
 
-## 1.Reverse-proxy, load-balancing, 2 algorithms for load-balancing in goproxy
+## 1.Reverse-proxy, load-balancing, 4 algorithms for load-balancing in goproxy
 
 - GET/POST/PUT/DELETE methods in http and CONNECT method in https are supported in goproxy
 - Http authentication was also supported
