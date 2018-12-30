@@ -79,7 +79,7 @@ Reason：
 2. go build
 
 ## 4.Run
-goproxy uses cfg.toml as its configurations file which is located to the path: /etc/proxy/cfg.toml of your server, you should create a cfg.toml in there previously, here is a typical example:
+goproxy uses cfg.toml as its configurations file which is located in /etc/proxy/cfg.toml of your server, you should create a cfg.toml in there previously, here is a typical example:
 
 ```
 [server]
