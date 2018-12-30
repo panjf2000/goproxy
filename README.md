@@ -5,8 +5,10 @@
 [![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.svg?v=103)](https://opensource.org/licenses/GPL-3.0/)
 [![Open Source Love](https://badges.frapsoft.com/os/v2/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 
+# [中文](README_ZH.md)
 
 # Changelog in 16/04/2018
+
 ## Change redis client
 Change the redis client in goproxy from radix.v2 to redigo.
 
