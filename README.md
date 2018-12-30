@@ -64,11 +64,11 @@ Reason：
 - redigo（Go client for Redis）
 - cron（a *cron* library for go）
 
->logrus安装：go get github.com/Sirupsen/logrus
+>Install logrus：go get github.com/Sirupsen/logrus
 
->~~radix.v2安装：go get github.com/mediocregopher/radix.v2/…~~
+>~~Install radix.v2：go get github.com/mediocregopher/radix.v2/…~~
 
->redigo安装：go get github.com/gomodule/redigo/redis
+>Install redigo：go get github.com/gomodule/redigo/redis
 
 **Besides, you also need a redis to support caching responses in goproxy.**
 
