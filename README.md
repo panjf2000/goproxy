@@ -105,7 +105,7 @@ max_active = 10
 
 ```
 
-### config释义：
+### configurations meaning：
 #### [server]
 - port：the port goroxy will listen to
 - reverse：enable the reverse-proxy feature or not
