@@ -68,7 +68,7 @@ redis server的崩溃，本人向radix.v2的作者提交了一个pr，但作者�
 **另外，该项目需要redis数据库的支持，所以要有一个redis环境**
 
 ## 3.编译源码
-1. cd $GOPATH/src/
+1. cd $GOPATH/src/github.com/panjf2000/goproxy
 2. go build
 
 ## 4.运行

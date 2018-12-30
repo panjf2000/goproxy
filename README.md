@@ -75,7 +75,7 @@ Reason：
 **Besides, you also need a redis to support caching responses in goproxy.**
 
 ## 3.Compile the source code
-1. cd $GOPATH/src/
+1. cd $GOPATH/src/github.com/panjf2000/goproxy
 2. go build
 
 ## 4.Run
