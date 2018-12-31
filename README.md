@@ -19,7 +19,7 @@ Reason：
 >I had tried to submit a PR to radix.v2 expecting to fix it but the author from radix.v2 rejected that PR saying that logic in radix.v2 pool was intended..., well, he is the author of radix.v2 so he got the right to determine what radix.v2 should be. However, based on the conflicting ideas from us, I'm afraid I have to change the redis client in goproxy from radix.v2 to redigo whose connection pool will restrict the size of connections severely.
 
 # Changelog in 11/02/2018
-## Optimization in configurations management of proxy server
+## Optimization in configurations management of goproxy
 
 >Managing configurations in goproxy with [viper](https://github.com/spf13/viper) which supports eager loading and means it will take effect immediately right after you update the configuration file. 
 
