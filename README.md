@@ -127,9 +127,9 @@ max_active = 10
 - idle_timeout：duration for idle redis connection to close
 - max_active：maximum size of redis connection pool
 
-You will get a binary file after executing the `go build` command named goproxy as the same of project name which can be run directly to start a proxy server.
+You will get a binary file named goproxy as the same of project name after executing the `go build` command and that binary file can be run directly to start a goproxy server.
 
-The started proxy server will listen the port set in cfg.toml file and you can just forward your http requests to the back-end servers set in cfg.toml by going through that port in goproxy.
+The started goproxy server will listen in the port set in cfg.toml file and you can just forward your http requests to the back-end servers set in cfg.toml by going through that port in goproxy.
 
 # Secondary development
 >Up to present, goproxy has implemented all basic functionalities like reverse-proxy, load-blancing, http caching, http requests controlling, etc and if you want to customize the responses more accurately, you can implement a new handler by inheriting (not a strict statement as there is no OO in golang) from the ProxyServer struct located in handlers/proxy.go and overriding its method named ServeHTTP, then you are allowed to write your own logic into it.
