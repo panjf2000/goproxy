@@ -1,4 +1,4 @@
-<div align="center"><img src="goproxy_logo.png"/></div>
+<div align="center"><img src="https://user-images.githubusercontent.com/7496278/51542956-6b43a100-1e97-11e9-8d98-4ed8e5866c06.png"/></div>
 
 
 [![Build Status](https://travis-ci.org/panjf2000/goproxy.svg?branch=master)](https://travis-ci.org/panjf2000/goproxy)
