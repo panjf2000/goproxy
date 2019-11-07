@@ -11,6 +11,7 @@ inverse_mode = 2
 auth = false
 cache = false
 cache_timeout = 60
+cache_type = "redis"
 log = 1
 log_path = "./logs"
 user = { agent = "proxy" }
@@ -24,5 +25,8 @@ max_idle = 5
 idle_timeout = 10
 max_active = 10
 
+[mem]
+capacity = 1000
+cache_replacement_policy = "LRU"
 
 

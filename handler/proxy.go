@@ -20,9 +20,11 @@ type ProxyServer struct {
 // NewProxyServer returns a new proxy server.
 func NewProxyServer() *http.Server {
 	if config.RuntimeViper.GetBool("server.cache") {
-		RegisterCachePool(cache.NewCachePool(config.RuntimeViper.GetString("redis.redis_host"),
-			config.RuntimeViper.GetString("redis.redis_pass"), config.RuntimeViper.GetInt("redis.idle_timeout"),
-			config.RuntimeViper.GetInt("redis.max_active"), config.RuntimeViper.GetInt("redis.max_idle")))
+		var cachePoolType cache.CachePoolType
+		if config.RuntimeViper.GetString("server.cache_type") == "redis" {
+			cachePoolType = cache.Redis
+		}
+		RegisterCachePool(cache.NewCachePool(cachePoolType))
 	}
 
 	return &http.Server{
@@ -97,7 +99,7 @@ func (ps *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	Client.Write(HTTP200)
+	_, _ = Client.Write(HTTP200)
 
 	go copyRemoteToClient(ps.Browser, Remote, Client)
 	go copyRemoteToClient(ps.Browser, Client, Remote)
@@ -105,8 +107,8 @@ func (ps *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Request) {
 
 func copyRemoteToClient(User string, Remote, Client net.Conn) {
 	defer func() {
-		Remote.Close()
-		Client.Close()
+		_ = Remote.Close()
+		_ = Client.Close()
 	}()
 
 	_, err := io.Copy(Remote, Client)

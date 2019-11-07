@@ -10,11 +10,11 @@ import (
 	"github.com/panjf2000/goproxy/tool"
 )
 
-type ConnCachePool struct {
+type RedisConnCachePool struct {
 	pool *redis.Pool
 }
 
-func NewCachePool(address, password string, idleTimeout, cap, maxIdle int) *ConnCachePool {
+func NewRedisCachePool(address, password string, idleTimeout, cap, maxIdle int) *RedisConnCachePool {
 	redisPool := &redis.Pool{
 		MaxActive:   cap,
 		MaxIdle:     maxIdle,
@@ -27,7 +27,7 @@ func NewCachePool(address, password string, idleTimeout, cap, maxIdle int) *Conn
 			}
 			if password != "" {
 				if _, err := conn.Do("AUTH", password); err != nil {
-					conn.Close()
+					_ = conn.Close()
 					return nil, err
 				}
 			}
@@ -42,18 +42,18 @@ func NewCachePool(address, password string, idleTimeout, cap, maxIdle int) *Conn
 
 		},
 	}
-	return &ConnCachePool{pool: redisPool}
+	return &RedisConnCachePool{pool: redisPool}
 
 }
 
-func (c *ConnCachePool) Get(uri string) api.Cache {
+func (c *RedisConnCachePool) Get(uri string) api.Cache {
 	if respCache := c.get(tool.MD5Uri(uri)); respCache != nil {
 		return respCache
 	}
 	return nil
 }
 
-func (c *ConnCachePool) get(md5Uri string) *HttpCache {
+func (c *RedisConnCachePool) get(md5Uri string) *HttpCache {
 	conn := c.pool.Get()
 	defer conn.Close()
 
@@ -62,15 +62,15 @@ func (c *ConnCachePool) get(md5Uri string) *HttpCache {
 		return nil
 	}
 	respCache := new(HttpCache)
-	json.Unmarshal(b, respCache)
+	_ = json.Unmarshal(b, respCache)
 	return respCache
 }
 
-func (c *ConnCachePool) Delete(uri string) {
+func (c *RedisConnCachePool) Delete(uri string) {
 	c.delete(tool.MD5Uri(uri))
 }
 
-func (c *ConnCachePool) delete(md5Uri string) {
+func (c *RedisConnCachePool) delete(md5Uri string) {
 	conn := c.pool.Get()
 	defer conn.Close()
 
@@ -80,7 +80,7 @@ func (c *ConnCachePool) delete(md5Uri string) {
 	return
 }
 
-func (c *ConnCachePool) CheckAndStore(uri string, req *http.Request, resp *http.Response) {
+func (c *RedisConnCachePool) CheckAndStore(uri string, req *http.Request, resp *http.Response) {
 	if !IsReqCache(req) || !IsRespCache(resp) {
 		return
 	}
@@ -100,8 +100,8 @@ func (c *ConnCachePool) CheckAndStore(uri string, req *http.Request, resp *http.
 	defer conn.Close()
 
 	_, err = conn.Do("MULTI")
-	conn.Do("SET", md5Uri, b)
-	conn.Do("EXPIRE", md5Uri, respCache.maxAge)
+	_, _ = conn.Do("SET", md5Uri, b)
+	_, _ = conn.Do("EXPIRE", md5Uri, respCache.maxAge)
 	_, err = conn.Do("EXEC")
 	if err != nil {
 		return
@@ -109,6 +109,6 @@ func (c *ConnCachePool) CheckAndStore(uri string, req *http.Request, resp *http.
 
 }
 
-//func (c *ConnCachePool) Clear(d time.Duration) {
+//func (c *RedisConnCachePool) Clear(d time.Duration) {
 //
 //}

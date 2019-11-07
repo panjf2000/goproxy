@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/Sirupsen/logrus v1.0.5
+	github.com/bluele/gcache v0.0.0-20190518031135-bc40bd653833
 	github.com/elazarl/goproxy v0.0.0-20191011121108-aa519ddbe484 // indirect
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gomodule/redigo v2.0.0+incompatible
