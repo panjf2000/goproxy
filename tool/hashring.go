@@ -34,7 +34,7 @@ func New(nodes []string) *HashRing {
 
 func NewWithWeights(weights map[string]int) *HashRing {
 	nodes := make([]string, 0, len(weights))
-	for node, _ := range weights {
+	for node := range weights {
 		nodes = append(nodes, node)
 	}
 	hashRing := &HashRing{

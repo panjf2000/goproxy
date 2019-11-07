@@ -5,23 +5,11 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"path"
 
-	"github.com/Sirupsen/logrus"
-	"github.com/panjf2000/goproxy/config"
 	"github.com/panjf2000/goproxy/interface"
-	"github.com/panjf2000/goproxy/tool"
 )
 
 var cachePool api.CachePool
-var cacheLog *logrus.Logger
-
-func init() {
-	logPath := config.RuntimeViper.GetString("server.log_path")
-	os.MkdirAll(logPath, os.ModePerm)
-	cacheLog, _ = tool.InitLog(path.Join(logPath, "cache.log"))
-}
 
 func RegisterCachePool(c api.CachePool) {
 	cachePool = c
@@ -36,15 +24,9 @@ func (ps *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Request) {
 
 	if c != nil {
 		if c.Verify() {
-			cacheLog.WithFields(logrus.Fields{
-				"request url": uri,
-			}).Debug("Found cache!")
 			c.WriteTo(rw)
 			return
 		}
-		cacheLog.WithFields(logrus.Fields{
-			"request url": uri,
-		}).Debug("Delete cache!")
 		cachePool.Delete(uri)
 	}
 
@@ -60,9 +42,6 @@ func (ps *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Request) {
 	*cresp = *resp
 	CopyResponse(cresp, resp)
 
-	cacheLog.WithFields(logrus.Fields{
-		"request url": uri,
-	}).Debug("Check out this cache and then stores it if it is right!")
 	go cachePool.CheckAndStore(uri, req, cresp)
 
 	ClearHeaders(rw.Header())
@@ -70,18 +49,10 @@ func (ps *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Request) {
 
 	rw.WriteHeader(resp.StatusCode) // writes the response status.
 
-	nr, err := io.Copy(rw, resp.Body)
+	_, err = io.Copy(rw, resp.Body)
 	if err != nil && err != io.EOF {
-		cacheLog.WithFields(logrus.Fields{
-			"client": ps.Browser,
-			"error":  err,
-		}).Error("occur an error when copying remote response to this client")
 		return
 	}
-	cacheLog.WithFields(logrus.Fields{
-		"response bytes": nr,
-		"request url":    req.URL.Host,
-	}).Info("response has been copied successfully!")
 }
 
 func CopyResponse(dest *http.Response, src *http.Response) {

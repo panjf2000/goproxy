@@ -67,7 +67,7 @@ func TestServer(t *testing.T) {
 		}
 		t.Logf("{GET} response: %s\n", body)
 	}
-	
+
 	resp, body, errs := gorequest.New().Post("http://127.0.0.1:8080/test_proxy").Send(`{"post_req": "Hello World!"}`).End()
 
 	if errs != nil {

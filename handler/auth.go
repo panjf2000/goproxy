@@ -4,24 +4,12 @@ import (
 	"encoding/base64"
 	"errors"
 	"net/http"
-	"os"
-	"path"
 	"strings"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/panjf2000/goproxy/config"
-	"github.com/panjf2000/goproxy/tool"
 )
 
 var HTTP407 = []byte("HTTP/1.1 407 Proxy Authorization Required\r\nProxy-Authenticate: Basic realm=\"Secure Proxys\"\r\n\r\n")
-var authLog *logrus.Logger
-
-func init() {
-	logPath := config.RuntimeViper.GetString("server.log_path")
-	os.MkdirAll(logPath, os.ModePerm)
-	authLog, _ = tool.InitLog(path.Join(logPath, "auth.log"))
-
-}
 
 //Auth provides basic authorization for proxy server.
 func (ps *ProxyServer) Auth(rw http.ResponseWriter, req *http.Request) bool {
@@ -29,14 +17,9 @@ func (ps *ProxyServer) Auth(rw http.ResponseWriter, req *http.Request) bool {
 	if config.RuntimeViper.GetBool("server.auth") {
 		// authentication for the proxy server
 		if ps.Browser, err = ps.auth(rw, req); err != nil {
-			authLog.Error("Fail to log in!")
-			authLog.WithFields(logrus.Fields{
-				"error": err,
-			}).Error("Fail to log in!")
 			//ps.Browser = "Anonymous"
 			return false
 		}
-		authLog.Info("authentication is passed!")
 		return true
 	}
 	ps.Browser = "Anonymous"
@@ -56,10 +39,6 @@ func (ps *ProxyServer) auth(rw http.ResponseWriter, req *http.Request) (string, 
 	}
 	data, err := base64.StdEncoding.DecodeString(auth)
 	if err != nil {
-		authLog.WithFields(logrus.Fields{
-			"auth":  auth,
-			"error": err,
-		}).Error("Fail to decoding Proxy-Authorization!")
 		return "", errors.New("fail to decoding Proxy-Authorization")
 	}
 

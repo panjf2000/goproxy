@@ -14,14 +14,9 @@ package tool
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"fmt"
 	"math/rand"
 	"os"
 	"time"
-
-	"github.com/Sirupsen/logrus"
-	"github.com/panjf2000/goproxy/config"
-	"github.com/robfig/cron"
 )
 
 // 判断给定文件名是否是一个目录
@@ -49,40 +44,6 @@ func CheckFileIsExist(filepath string) bool {
 		exist = false
 	}
 	return exist
-}
-
-func InitLog(logPath string) (*logrus.Logger, error) {
-	newLogPath := fmt.Sprintf("%s.%s", logPath, time.Now().Format("20060102"))
-	logger := logrus.New()
-	// Log as JSON instead of the default ASCII formatter.
-	logger.Formatter = &logrus.TextFormatter{}
-
-	// Output to stderr instead of stdout, could also be a file.
-	f, err := os.OpenFile(newLogPath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0660)
-	if err != nil {
-		return nil, err
-	}
-	logger.Out = f
-
-	// Only log the warning severity or above.
-	if config.RuntimeViper.GetInt("server.log") == 1 {
-		logger.Level = logrus.DebugLevel
-	} else {
-		logger.Level = logrus.InfoLevel
-	}
-	//logger.SetNoLock()
-
-	// set crontab task to generate a new log file with names ending in date-format suffix.
-	spec := "0 0 1 * * *" // 1:00 am every day.
-	c := cron.New()
-	c.AddFunc(spec, func() {
-		cronLogPath := fmt.Sprintf("%s.%s", logPath, time.Now().Format("20060102"))
-		logger.Out, _ = os.OpenFile(cronLogPath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0660)
-	})
-	c.Start()
-
-	return logger, nil
-
 }
 
 //GenRandom 获取随机数
