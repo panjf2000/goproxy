@@ -81,15 +81,21 @@ Reason：
 ## 4.Run
 goproxy uses cfg.toml as its configurations file which is located in /etc/proxy/cfg.toml of your server, you should create a cfg.toml in there previously, here is a typical example:
 
-```
+```toml
+# toml file for goproxy
+
+title = "TOML config for goproxy"
+
 [server]
 port = ":8080"
 reverse = true
-proxy_pass = ["127.0.0.1:6000", "127.0.0.1:7000", "127.0.0.1:8000", "127.0.0.1:9000"]
+proxy_pass = ["127.0.0.1:6000"]
+# 0 - random, 1 - loop, 2 - power of two choices(p2c), 3 - hash, 4 - consistent hashing
 inverse_mode = 2
 auth = false
 cache = true
 cache_timeout = 60
+cache_type = "redis"
 log = 1
 log_path = "./logs"
 user = { agent = "proxy" }
@@ -97,12 +103,15 @@ http_read_timeout = 10
 http_write_timeout = 10
 
 [redis]
-redis_host = "127.0.0.1:6379"
-redis_pass = "redis_pass"
+redis_host = "localhost:6379"
+redis_pass = ""
 max_idle = 5
 idle_timeout = 10
 max_active = 10
 
+[mem]
+capacity = 1000
+cache_replacement_policy = "LRU"
 ```
 
 ### configurations meaning：
@@ -113,7 +122,8 @@ max_active = 10
 - inverse_mode：load-balancing algoritms：0 for Randomized Algorithm； 1 for Weight Round Robin Algorithm； 2 for Power of Two Choices (P2C) Algorithm； 3 for IP Hash Algorithm； 4 for Consistent Hashing with Bounded Loads Algorithm
 - auth：enable http authentication or not
 - cache：enable responses caching or not
-- cache_timeout：expired time of responses caching, in minutes
+- cache_timeout：expired time of responses caching, in seconds
+- cache_type: redis or memory
 - log：log level, 1 for Debug，0 for info
 - log_path：the path of log files
 - user：user name from http authentication
@@ -126,6 +136,11 @@ max_active = 10
 - max_idle：the maximum idle connections of redis connection pool
 - idle_timeout：duration for idle redis connection to close
 - max_active：maximum size of redis connection pool
+
+#### [mem]
+
+- capacity: cache capacity of items
+- cache_replacement_policy: LRU or LFU
 
 You will get a binary file named goproxy as the same of project name after executing the `go build` command and that binary file can be run directly to start a goproxy server.
 

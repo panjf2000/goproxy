@@ -73,15 +73,21 @@ redis server的崩溃，本人向radix.v2的作者提交了一个pr，但作者�
 
 ## 4.运行
 先配置cfg.toml 配置文件，cfg.toml配置文件默认存放路径为/etc/proxy/cfg.toml,请在该目录预先置放一个cfg.toml配置文件，一个典型的例子如下：
-```
+```toml
+# toml file for goproxy
+
+title = "TOML config for goproxy"
+
 [server]
 port = ":8080"
 reverse = true
-proxy_pass = ["127.0.0.1:6000", "127.0.0.1:7000", "127.0.0.1:8000", "127.0.0.1:9000"]
+proxy_pass = ["127.0.0.1:6000"]
+# 0 - random, 1 - loop, 2 - power of two choices(p2c), 3 - hash, 4 - consistent hashing
 inverse_mode = 2
 auth = false
 cache = true
 cache_timeout = 60
+cache_type = "redis"
 log = 1
 log_path = "./logs"
 user = { agent = "proxy" }
@@ -89,12 +95,15 @@ http_read_timeout = 10
 http_write_timeout = 10
 
 [redis]
-redis_host = "127.0.0.1:6379"
-redis_pass = "redis_pass"
+redis_host = "localhost:6379"
+redis_pass = ""
 max_idle = 5
 idle_timeout = 10
 max_active = 10
 
+[mem]
+capacity = 1000
+cache_replacement_policy = "LRU"
 ```
 
 ### config释义：
@@ -105,7 +114,8 @@ max_active = 10
 - inverse_mode：设置负载策略，即选择转发的服务器，目前支持模式：0-随机挑选一个服务器； 1-轮询法（加权轮询）； 2-p2c负载均衡算法； 3-IP HASH模式，根据client ip用hash ring择取服务器； 4-边界一致性哈希算法
 - auth：开启代理认证，值为true或者false
 - cache：是否开启缓存（缓存response），值为true或者false
-- cache_timeout：redis缓存response的刷新时间，以分钟为单位
+- cache_timeout：redis缓存response的刷新时间，以秒为单位
+- cache_type: redis 或者 memory
 - log：设置log的level,值为1表示Debug，值为0表示info
 - log_path：设置存放log的路径
 - user：代理服务器的http authentication 用户
@@ -118,6 +128,11 @@ max_active = 10
 - max_idle：redis连接池最大空闲连接数
 - idle_timeout：空闲连接超时关闭设置
 - max_active：连接池容量
+
+#### [mem]
+
+- capacity：缓存容量
+- cache_replacement_policy：LRU 或者 LFU 算法
 
 
 运行完go build后会生成一个执行文件，名字与项目名相同，可以直接运行：./goproxy

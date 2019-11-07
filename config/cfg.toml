@@ -9,7 +9,7 @@ proxy_pass = ["127.0.0.1:6000", "127.0.0.1:7000", "127.0.0.1:8000", "127.0.0.1:9
 # 0 - random, 1 - loop, 2 - power of two choices(p2c), 3 - hash, 4 - consistent hashing
 inverse_mode = 2
 auth = false
-cache = false
+cache = true
 cache_timeout = 60
 cache_type = "redis"
 log = 1
