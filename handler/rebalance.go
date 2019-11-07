@@ -17,27 +17,27 @@ import (
 var r2LB *r2.R2
 var p2cLB *p2c.P2C
 var boundedLB *bounded.Bounded
-var memcacheServers map[string]int
+var backendServers map[string]int
 var serverNodes []string
 
 func init() {
-	memcacheServers = make(map[string]int)
+	backendServers = make(map[string]int)
 	proxyPasses := config.RuntimeViper.GetStringSlice("server.proxy_pass")
-	for _, val := range proxyPasses {
-		if tool.IsHost(val) {
-			memcacheServers[val] = 1
-			serverNodes = append(serverNodes, val)
-		} else if tool.IsWeightHost(val) {
-			hostPair := strings.Split(val, "^")
+	for _, addr := range proxyPasses {
+		if tool.IsHost(addr) {
+			backendServers[addr] = 1
+			serverNodes = append(serverNodes, addr)
+		} else if tool.IsWeightHost(addr) {
+			hostPair := strings.Split(addr, "^")
 			host := hostPair[0]
 			weight, _ := strconv.Atoi(hostPair[1])
-			memcacheServers[host] = weight
+			backendServers[host] = weight
 			serverNodes = append(serverNodes, host)
 		} else {
 		}
 	}
 	r2LB = r2.New(serverNodes...)
-	for host, weight := range memcacheServers {
+	for host, weight := range backendServers {
 		r2LB.AddWeight(host, weight)
 	}
 	p2cLB = p2c.New(serverNodes...)
@@ -79,7 +79,7 @@ func (ps *ProxyServer) loadBalancing(req *http.Request) {
 	case 3:
 		// Calculates a HashCode using the client ip and forwards this request to a back-end server base on HashCode with
 		// weights in config file.
-		ring := tool.NewWithWeights(memcacheServers)
+		ring := tool.NewWithWeights(backendServers)
 		if clientIP, _, err := net.SplitHostPort(req.RemoteAddr); err == nil {
 			server, _ := ring.GetNode(clientIP)
 			proxyHost = server

@@ -77,5 +77,4 @@ func TestServer(t *testing.T) {
 		t.Fatalf("response status err, status code:%d\n", resp.StatusCode)
 	}
 	t.Logf("{POST} response: %s\n", body)
-
 }
