@@ -1,5 +1,4 @@
 <div align="center"><img src="https://raw.githubusercontent.com/panjf2000/logos/master/goproxy/logo.png"/></div>
-
 [![Build Status](https://travis-ci.org/panjf2000/goproxy.svg?branch=master)](https://travis-ci.org/panjf2000/goproxy)
 [![Goproxy on Sourcegraph](https://sourcegraph.com/github.com/panjf2000/goproxy/-/badge.svg)](https://sourcegraph.com/github.com/panjf2000/goproxy?badge)
 [![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.svg?v=103)](https://opensource.org/licenses/GPL-3.0/)
@@ -148,3 +147,7 @@ The started goproxy server will listen in the port set in cfg.toml file and you 
 
 # Secondary development
 >Up to present, goproxy has implemented all basic functionalities like reverse-proxy, load-blancing, http caching, http requests controlling, etc and if you want to customize the responses more accurately, you can implement a new handler by inheriting (not a strict statement as there is no OO in golang) from the ProxyServer struct located in handlers/proxy.go and overriding its method named ServeHTTP, then you are allowed to write your own logic into it.
+
+# Thanks
+
+[httpproxy](https://github.com/sakeven/httpproxy)

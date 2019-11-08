@@ -1,5 +1,4 @@
 <div align="center"><img src="https://raw.githubusercontent.com/panjf2000/logos/master/goproxy/logo.png"/></div>
-
 [![Build Status](https://travis-ci.org/panjf2000/goproxy.svg?branch=master)](https://travis-ci.org/panjf2000/goproxy)
 [![Goproxy on Sourcegraph](https://sourcegraph.com/github.com/panjf2000/goproxy/-/badge.svg)](https://sourcegraph.com/github.com/panjf2000/goproxy?badge)
 [![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.svg?v=103)](https://opensource.org/licenses/GPL-3.0/)
@@ -140,3 +139,6 @@ cache_replacement_policy = "LRU"
 # 二次开发
 >目前该项目已实现反向代理负载均衡，支持缓存，也可以支持开发者精确控制请求，如屏蔽某些请求或者重写某些请求，甚至于对response进行自定义修改（定制response的内容），要实现精确控制request，只需继承（不严谨的说法，因为实际上golang没有面向对象的概念）handlers/proxy.go中的ProxyServer struct，重写它的ServeHTTP方法，进行自定义的处理即可。
 
+# 致谢
+
+[httpproxy](https://github.com/sakeven/httpproxy)
