@@ -82,7 +82,6 @@ func (ps *ProxyServer) HttpHandler(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
-var HTTP200 = []byte("HTTP/1.1 200 Connection Established\r\n\r\n")
 
 // HttpsHandler handles any connection which needs "connect" method.
 func (ps *ProxyServer) HttpsHandler(rw http.ResponseWriter, req *http.Request) {

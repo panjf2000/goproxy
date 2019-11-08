@@ -3,13 +3,12 @@ package handler
 import (
 	"encoding/base64"
 	"errors"
+	"log"
 	"net/http"
 	"strings"
 
 	"github.com/panjf2000/goproxy/config"
 )
-
-var HTTP407 = []byte("HTTP/1.1 407 Proxy Authorization Required\r\nProxy-Authenticate: Basic realm=\"Secure Proxys\"\r\n\r\n")
 
 //Auth provides basic authorization for proxy server.
 func (ps *ProxyServer) Auth(rw http.ResponseWriter, req *http.Request) bool {
@@ -34,7 +33,7 @@ func (ps *ProxyServer) auth(rw http.ResponseWriter, req *http.Request) (string, 
 	auth = strings.Replace(auth, "Basic ", "", 1)
 
 	if auth == "" {
-		NeedAuth(rw, HTTP407)
+		NeedAuth(rw)
 		return "", errors.New("need proxy authorization")
 	}
 	data, err := base64.StdEncoding.DecodeString(auth)
@@ -42,38 +41,36 @@ func (ps *ProxyServer) auth(rw http.ResponseWriter, req *http.Request) (string, 
 		return "", errors.New("fail to decoding Proxy-Authorization")
 	}
 
-	var user, passwd string
+	var user, password string
 
-	userPasswdPair := strings.Split(string(data), ":")
-	if len(userPasswdPair) != 2 {
-		NeedAuth(rw, HTTP407)
+	userPasswordPair := strings.Split(string(data), ":")
+	if len(userPasswordPair) != 2 {
+		NeedAuth(rw)
 		return "", errors.New("fail to log in")
 	}
-	user = userPasswdPair[0]
-	passwd = userPasswdPair[1]
-	if Check(user, passwd) == false {
-		NeedAuth(rw, HTTP407)
+	user = userPasswordPair[0]
+	password = userPasswordPair[1]
+	if Verify(user, password) == false {
+		NeedAuth(rw)
 		return "", errors.New("fail to log in")
 	}
 	return user, nil
 }
 
-func NeedAuth(rw http.ResponseWriter, challenge []byte) error {
+func NeedAuth(rw http.ResponseWriter) {
 	hj, _ := rw.(http.Hijacker)
 	Client, _, err := hj.Hijack()
-	if err != nil {
-		return errors.New("fail to get Tcp connection of client")
-	}
 	defer Client.Close()
-
-	Client.Write(challenge)
-	return nil
+	if err != nil {
+		log.Printf("fail to get TCP connection of client in auth, %v", err)
+	}
+	_, _ = Client.Write(HTTP407)
 }
 
-// Check checks username and password
-func Check(user, passwd string) bool {
-	if user != "" && passwd != "" {
-		if pass, ok := config.RuntimeViper.GetStringMapString("server.user")[user]; ok && pass == passwd {
+// Verify verifies username and password
+func Verify(user, password string) bool {
+	if user != "" && password != "" {
+		if pass, ok := config.RuntimeViper.GetStringMapString("server.user")[user]; ok && pass == password {
 			return true
 		}
 	}
