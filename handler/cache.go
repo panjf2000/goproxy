@@ -24,7 +24,7 @@ func (ps *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Request) {
 
 	if c != nil {
 		if c.Verify() {
-			c.WriteTo(rw)
+			_, _ = c.WriteTo(rw)
 			return
 		}
 		cachePool.Delete(uri)
@@ -38,11 +38,11 @@ func (ps *ProxyServer) CacheHandler(rw http.ResponseWriter, req *http.Request) {
 	}
 	defer resp.Body.Close()
 
-	cresp := new(http.Response)
-	*cresp = *resp
-	CopyResponse(cresp, resp)
+	httpResp := new(http.Response)
+	*httpResp = *resp
+	CopyResponse(httpResp, resp)
 
-	go cachePool.CheckAndStore(uri, req, cresp)
+	go cachePool.CheckAndStore(uri, req, httpResp)
 
 	ClearHeaders(rw.Header())
 	CopyHeaders(rw.Header(), resp.Header)

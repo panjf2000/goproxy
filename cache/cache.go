@@ -18,10 +18,10 @@ type HttpCache struct {
 	URI          string      `json:"url"`
 	LastModified string      `json:"last_modified"` //eg:"Fri, 27 Jun 2014 07:19:49 GMT"
 	ETag         string      `json:"etag"`
-	Mustverified bool        `json:"must_verified"`
-	//Vlidity is a time when to verfiy the cache again.
-	Vlidity time.Time `json:"vlidity"`
-	maxAge  int64     `json:"-"`
+	MustVerified bool        `json:"must_verified"`
+	//Validity is a time when to verify the cache again.
+	Validity time.Time `json:"validity"`
+	maxAge   int64     `json:"-"`
 }
 
 func NewCacheResp(resp *http.Response) *HttpCache {
@@ -47,17 +47,17 @@ func NewCacheResp(resp *http.Response) *HttpCache {
 	if strings.Index(cacheControl, "no-cache") != -1 ||
 		strings.Index(cacheControl, "must-revalidate") != -1 ||
 		strings.Index(cacheControl, "proxy-revalidate") != -1 {
-		c.Mustverified = false
+		c.MustVerified = false
 		return nil
 	}
-	c.Mustverified = true
+	c.MustVerified = true
 
 	if Expires := c.Header.Get("Expires"); Expires != "" {
-		c.Vlidity, err = time.Parse(http.TimeFormat, Expires)
+		c.Validity, err = time.Parse(http.TimeFormat, Expires)
 		if err != nil {
 			return nil
 		}
-		log.Println("expire:", c.Vlidity)
+		log.Println("expire:", c.Validity)
 	}
 
 	maxAge := getAge(cacheControl)
@@ -72,23 +72,23 @@ func NewCacheResp(resp *http.Response) *HttpCache {
 				return nil
 			}
 		}
-		c.Vlidity = Time.Add(time.Duration(maxAge) * time.Second)
+		c.Validity = Time.Add(time.Duration(maxAge) * time.Second)
 		c.maxAge = maxAge
 	} else {
 		//c.maxAge, max_age = 0.1 * 60 * 60, 0.1 * 60 * 60
 		cacheTimeout := config.RuntimeViper.GetInt64("server.cache_timeout")
 		c.maxAge, maxAge = cacheTimeout, cacheTimeout
 		Time := time.Now().UTC()
-		c.Vlidity = Time.Add(time.Duration(maxAge) * time.Second)
+		c.Validity = Time.Add(time.Duration(maxAge) * time.Second)
 	}
-	log.Println("all:", c.Vlidity)
+	log.Println("all:", c.Validity)
 
 	return c
 }
 
 // Verify verifies whether cache is out of date.
 func (c *HttpCache) Verify() bool {
-	if c.Mustverified == true && c.Vlidity.After(time.Now().UTC()) {
+	if c.MustVerified == true && c.Validity.After(time.Now().UTC()) {
 		return true
 	}
 
@@ -152,8 +152,8 @@ func getAge(cacheControl string) (age int64) {
 		}
 		return -1
 	}
-	if sMaxage := f("s-maxage"); sMaxage != -1 {
-		return sMaxage
+	if sMaxAge := f("s-maxage"); sMaxAge != -1 {
+		return sMaxAge
 	}
 	return f("max-age")
 }
