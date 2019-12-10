@@ -1,5 +1,6 @@
 <div align="center"><img src="https://raw.githubusercontent.com/panjf2000/logos/master/goproxy/logo.png"/></div>
 
+
 [![Build Status](https://travis-ci.org/panjf2000/goproxy.svg?branch=master)](https://travis-ci.org/panjf2000/goproxy)
 [![Goproxy on Sourcegraph](https://sourcegraph.com/github.com/panjf2000/goproxy/-/badge.svg)](https://sourcegraph.com/github.com/panjf2000/goproxy?badge)
 [![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.svg?v=103)](https://opensource.org/licenses/GPL-3.0/)
@@ -9,7 +10,7 @@
 
 ## goproxy
 
-goproxy 是使用 Go 实现的一个基本的负载均衡服务器，支持缓存（使用 Redis）；负载均衡目前支持：随机挑选一个服务器、轮询法（加权轮询）、p2c 负载均衡算法、IP HASH 模式，根据 client ip 用 hash ring 择取服务器、边界一致性哈希算法 6 种模式。另外，对转发的请求有较大的控制度，可以控制代理特定的请求，屏蔽特定的请求，甚至可以重写特定的请求。 
+goproxy 是使用 Go 实现的一个基本的负载均衡服务器，支持缓存（使用内存或者 Redis）；负载均衡目前支持：随机挑选一个服务器、轮询法（加权轮询）、p2c 负载均衡算法、IP HASH 模式，根据 client ip 用 hash ring 择取服务器、边界一致性哈希算法 6 种模式。另外，对转发的请求有较大的控制度，可以控制代理特定的请求，屏蔽特定的请求，甚至可以重写特定的请求。 
 
 另外，有时候项目需要用到第三方的服务并对返回的数据进行自定义修改，调用第三方的 API，利用 goproxy 可以很容易的控制第三方 API 返回的数据并进行自定义修改。
 
@@ -22,7 +23,7 @@ goproxy 是使用 Go 实现的一个基本的负载均衡服务器，支持缓�
 - 支持 HTTP authentication
 - 支持屏蔽/过滤第三方 API 
 - 支持改写 responses
-- 支持内容缓存和重校验：把 response 缓存在 redis，定期刷新，加快请求响应速度
+- 支持内容缓存和重校验：把 response 缓存在内存或者 Redis，定期刷新，加快请求响应速度
 - 灵活的 configurations 配置，支持热加载
 
 ## 🎉 使用
@@ -32,7 +33,7 @@ goproxy 是使用 Go 实现的一个基本的负载均衡服务器，支持缓�
 ```powershell
 go get github.com/panjf2000/goproxy
 ```
-**如果开启 redis 配置，则需要额外安装 redis。**
+**如果开启 Redis 配置，则需要额外安装 Redis。**
 
 ### 2.编译源码
 ```powershell

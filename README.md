@@ -1,5 +1,6 @@
 <div align="center"><img src="https://raw.githubusercontent.com/panjf2000/logos/master/goproxy/logo.png"/></div>
 
+
 [![Build Status](https://travis-ci.org/panjf2000/goproxy.svg?branch=master)](https://travis-ci.org/panjf2000/goproxy)
 [![Goproxy on Sourcegraph](https://sourcegraph.com/github.com/panjf2000/goproxy/-/badge.svg)](https://sourcegraph.com/github.com/panjf2000/goproxy?badge)
 [![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.svg?v=103)](https://opensource.org/licenses/GPL-3.0/)
@@ -9,7 +10,7 @@ Engilish|[🇨🇳中文](README_ZH.md)
 
 ## goproxy
 
-goproxy is a load-balancing, reverse-proxy server implemented in go, supporting cache( by redis). As a load-balancing server, it supports 4 algorithms: Randomized Algorithm, Weight Round Robin Algorithm, Power of Two Choices (P2C) Algorithm, IP Hash Algorithm, Consistent Hashing with Bounded Loads Algorithm, besides, goproxy can dominate the http requests: filtering and blocking specific requests and even rewriting them.
+goproxy is a load-balancing, reverse-proxy server implemented in go, supporting cache( in memory or Redis). As a load-balancing server, it supports 4 algorithms: Randomized Algorithm, Weight Round Robin Algorithm, Power of Two Choices (P2C) Algorithm, IP Hash Algorithm, Consistent Hashing with Bounded Loads Algorithm, besides, goproxy can dominate the http requests: filtering and blocking specific requests and even rewriting them.
 
 Sometimes your program needs to call some third party API and wants to customize the responses from it, in that case, goproxy will be your great choice.
 
@@ -22,7 +23,7 @@ Sometimes your program needs to call some third party API and wants to customize
 - Supporting HTTP authentication
 - Filtering and blocking specific http requests and even rewriting them in goproxy
 - Customizing responses from third-party API
-- Cache support with memory or redis to speed up the responding and the expired time of caches is configurable
+- Cache support with memory or Redis to speed up the responding and the expired time of caches is configurable
 - Flexible and eager-loading configurations
 
 ## 🎉 How to use goproxy
@@ -33,7 +34,7 @@ Sometimes your program needs to call some third party API and wants to customize
 go get github.com/panjf2000/goproxy
 ```
 
-**Besides, you also need a redis to support caching responses if you enable redis config in goproxy.**
+**Besides, you also need a Redis to support caching responses if you enable Redis config in goproxy.**
 
 ### 2.Compile the source code
 
