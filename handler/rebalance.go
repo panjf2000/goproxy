@@ -33,10 +33,8 @@ func init() {
 			weight, _ := strconv.Atoi(hostPair[1])
 			backendServers[host] = weight
 			serverNodes = append(serverNodes, host)
-		} else {
 		}
 	}
-	r2LB = r2.New(serverNodes...)
 	for host, weight := range backendServers {
 		r2LB.AddWeight(host, weight)
 	}
@@ -54,14 +52,14 @@ func (ps *ProxyServer) Done(req *http.Request) {
 	}
 }
 
-//ReverseHandler handles request for reverse proxy.
+//LoadBalancing handles request for reverse proxy.
 func (ps *ProxyServer) LoadBalancing(req *http.Request) {
 	if config.RuntimeViper.GetBool("server.reverse") {
 		ps.loadBalancing(req)
 	}
 }
 
-//ReverseHandler handles request for reverse proxy.
+//loadBalancing handles request for reverse proxy.
 func (ps *ProxyServer) loadBalancing(req *http.Request) {
 	var proxyHost string
 	mode := config.RuntimeViper.GetInt("server.inverse_mode")
