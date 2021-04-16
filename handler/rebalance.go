@@ -14,7 +14,7 @@ import (
 	"github.com/panjf2000/goproxy/tool"
 )
 
-var r2LB *r2.R2
+var r2LB = r2.New()
 var p2cLB *p2c.P2C
 var boundedLB *bounded.Bounded
 var backendServers map[string]int
@@ -35,6 +35,7 @@ func init() {
 			serverNodes = append(serverNodes, host)
 		}
 	}
+
 	for host, weight := range backendServers {
 		r2LB.AddWeight(host, weight)
 	}
@@ -43,7 +44,7 @@ func init() {
 }
 
 func (ps *ProxyServer) Done(req *http.Request) {
-	switch config.RuntimeViper.GetInt("server.inverse_mode") {
+	switch config.RuntimeViper.GetInt("server.reverse_mode") {
 	case 2:
 		p2cLB.Done(req.Host)
 	case 3:
@@ -62,7 +63,7 @@ func (ps *ProxyServer) LoadBalancing(req *http.Request) {
 //loadBalancing handles request for reverse proxy.
 func (ps *ProxyServer) loadBalancing(req *http.Request) {
 	var proxyHost string
-	mode := config.RuntimeViper.GetInt("server.inverse_mode")
+	mode := config.RuntimeViper.GetInt("server.reverse_mode")
 	switch mode {
 	case 0:
 		// Selects a back-end server base on randomized algorithm.
@@ -79,8 +80,7 @@ func (ps *ProxyServer) loadBalancing(req *http.Request) {
 		// weights in config file.
 		ring := tool.NewWithWeights(backendServers)
 		if clientIP, _, err := net.SplitHostPort(req.RemoteAddr); err == nil {
-			server, _ := ring.GetNode(clientIP)
-			proxyHost = server
+			proxyHost, _ = ring.GetNode(clientIP)
 		} else {
 			proxyHost = serverNodes[rand.Intn(len(serverNodes))]
 		}
