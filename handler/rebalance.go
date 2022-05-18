@@ -90,7 +90,7 @@ func (ps *ProxyServer) loadBalancing(req *http.Request) {
 			proxyHost = serverNodes[rand.Intn(len(serverNodes))]
 		}
 	case 4:
-		// Selects a back-end server base on Bounded Consistent Hashing go algorithm.
+		// Selects a back-end server base on Bound Consistent Hashing algorithm.
 		proxyHost, _ = boundedLB.Balance(req.RemoteAddr)
 	case 5:
 		// Selects a back-end server base on Least Load algorithm.
