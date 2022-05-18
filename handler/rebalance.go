@@ -54,8 +54,6 @@ func (ps *ProxyServer) Done(req *http.Request) {
 		boundedLB.Done(req.Host)
 	case 5:
 		leastLB.Done(req.Host)
-	case 6:
-		ipHashLB.Done(req.Host)
 	default:
 	}
 }
@@ -92,11 +90,11 @@ func (ps *ProxyServer) loadBalancing(req *http.Request) {
 			proxyHost = serverNodes[rand.Intn(len(serverNodes))]
 		}
 	case 4:
-		// Selects a back-end server base on Consistent Hashing with Boundedgo algorithm.
+		// Selects a back-end server base on Bounded Consistent Hashing go algorithm.
 		proxyHost, _ = boundedLB.Balance(req.RemoteAddr)
 	case 5:
 		// Selects a back-end server base on Least Load algorithm.
-		proxyHost, _ = leastLB.Balance(req.RemoteAddr)
+		proxyHost, _ = leastLB.Balance("")
 	case 6:
 		// Selects a back-end server base on IP Hashing algorithm.
 		proxyHost, _ = ipHashLB.Balance(req.RemoteAddr)
