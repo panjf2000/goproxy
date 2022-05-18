@@ -1,22 +1,23 @@
 package handler
 
 import (
+	"github.com/lafikl/liblb/r2"
+	"github.com/zehuamama/balancer/balancer"
 	"math/rand"
 	"net"
 	"net/http"
 	"strconv"
 	"strings"
 
-	"github.com/lafikl/liblb/bounded"
-	"github.com/lafikl/liblb/p2c"
-	"github.com/lafikl/liblb/r2"
 	"github.com/panjf2000/goproxy/config"
 	"github.com/panjf2000/goproxy/tool"
 )
 
 var r2LB = r2.New()
-var p2cLB *p2c.P2C
-var boundedLB *bounded.Bounded
+var p2cLB balancer.Balancer
+var boundedLB balancer.Balancer
+var leastLB balancer.Balancer
+var ipHashLB balancer.Balancer
 var backendServers map[string]int
 var serverNodes []string
 
@@ -39,16 +40,22 @@ func init() {
 	for host, weight := range backendServers {
 		r2LB.AddWeight(host, weight)
 	}
-	p2cLB = p2c.New(serverNodes...)
-	boundedLB = bounded.New(serverNodes...)
+	p2cLB, _ = balancer.Build(balancer.P2CBalancer, serverNodes)
+	boundedLB, _ = balancer.Build(balancer.BoundedBalancer, serverNodes)
+	leastLB, _ = balancer.Build(balancer.LeastLoadBalancer, serverNodes)
+	ipHashLB, _ = balancer.Build(balancer.IPHashBalancer, serverNodes)
 }
 
 func (ps *ProxyServer) Done(req *http.Request) {
 	switch config.RuntimeViper.GetInt("server.reverse_mode") {
 	case 2:
 		p2cLB.Done(req.Host)
-	case 3:
+	case 4:
 		boundedLB.Done(req.Host)
+	case 5:
+		leastLB.Done(req.Host)
+	case 6:
+		ipHashLB.Done(req.Host)
 	default:
 	}
 }
@@ -85,8 +92,14 @@ func (ps *ProxyServer) loadBalancing(req *http.Request) {
 			proxyHost = serverNodes[rand.Intn(len(serverNodes))]
 		}
 	case 4:
-		// Selects a back-end server base on Bound Consistent Hashing algorithm.
+		// Selects a back-end server base on Consistent Hashing with Boundedgo algorithm.
 		proxyHost, _ = boundedLB.Balance(req.RemoteAddr)
+	case 5:
+		// Selects a back-end server base on Least Load algorithm.
+		proxyHost, _ = leastLB.Balance(req.RemoteAddr)
+	case 6:
+		// Selects a back-end server base on IP Hashing algorithm.
+		proxyHost, _ = ipHashLB.Balance(req.RemoteAddr)
 	default:
 		// Selects a back-end server base on randomized algorithm.
 		index := tool.GenRandom(0, len(serverNodes), 1)[0]
