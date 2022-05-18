@@ -18,7 +18,7 @@ Sometimes your program needs to call some third party API and wants to customize
 
 ## 🚀 Features：
 
-- Supporting reverse-proxy, 8 load-balancing algorithms in goproxy: Random, IP Hash, Round Robin, Weight Round Robin, Power of Two Choices (P2C), Consistent Hashing with Bounded Loads, Least Load
+- Supporting reverse-proxy, 7 load-balancing algorithms in goproxy: Random, IP Hash, Round Robin, Weight Round Robin, Power of Two Choices (P2C), Consistent Hashing with Bounded Loads, Least Load
 - Supporting GET/POST/PUT/DELETE Methods in http and CONNECT method in https in goproxy
 - Supporting HTTP authentication
 - Filtering and blocking specific http requests and even rewriting them in goproxy
