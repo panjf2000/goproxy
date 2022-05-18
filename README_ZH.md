@@ -18,7 +18,7 @@ goproxy 是使用 Go 实现的一个基本的负载均衡服务器，支持缓�
 
 ## 🚀 功能：
 
-- 反向代理、负载均衡，负载策略目前支持 8 种算法：随机选取、IP HASH两种模式、轮询（Round Robin）法、加权轮询（Weight Round Robin）法、Power of Two Choices (P2C)算法、边界一致性哈希算法（Consistent Hashing with Bounded Loads）, 最小负载算法（Least Load）, IP哈希算法（IP Hash）
+- 反向代理、负载均衡，负载策略目前支持 8 种算法：随机选取、IP HASH两种模式、轮询（Round Robin）法、加权轮询（Weight Round Robin）法、Power of Two Choices (P2C)算法、边界一致性哈希算法（Consistent Hashing with Bounded Loads）, 最小负载算法（Least Load）
 - 支持 GET/POST/PUT/DELETE 这些 HTTP Methods，还有 HTTPS 的 CONNECT 方法
 - 支持 HTTP authentication
 - 支持屏蔽/过滤第三方 API 
@@ -53,7 +53,7 @@ title = "TOML config for goproxy"
 port = ":8080"
 reverse = true
 proxy_pass = ["127.0.0.1:6000"]
-# 0 - random, 1 - loop, 2 - power of two choices(p2c), 3 - hash, 4 - consistent hashing, 5 - least load, 6 - ip hash
+# 0 - random, 1 - loop, 2 - power of two choices(p2c), 3 - hash, 4 - consistent hashing, 5 - least load
 inverse_mode = 2
 auth = false
 cache = true

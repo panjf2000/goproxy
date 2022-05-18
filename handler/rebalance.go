@@ -17,7 +17,6 @@ var r2LB = r2.New()
 var p2cLB balancer.Balancer
 var boundedLB balancer.Balancer
 var leastLB balancer.Balancer
-var ipHashLB balancer.Balancer
 var backendServers map[string]int
 var serverNodes []string
 
@@ -43,7 +42,6 @@ func init() {
 	p2cLB, _ = balancer.Build(balancer.P2CBalancer, serverNodes)
 	boundedLB, _ = balancer.Build(balancer.BoundedBalancer, serverNodes)
 	leastLB, _ = balancer.Build(balancer.LeastLoadBalancer, serverNodes)
-	ipHashLB, _ = balancer.Build(balancer.IPHashBalancer, serverNodes)
 }
 
 func (ps *ProxyServer) Done(req *http.Request) {
@@ -95,9 +93,6 @@ func (ps *ProxyServer) loadBalancing(req *http.Request) {
 	case 5:
 		// Selects a back-end server base on Least Load algorithm.
 		proxyHost, _ = leastLB.Balance("")
-	case 6:
-		// Selects a back-end server base on IP Hashing algorithm.
-		proxyHost, _ = ipHashLB.Balance(req.RemoteAddr)
 	default:
 		// Selects a back-end server base on randomized algorithm.
 		index := tool.GenRandom(0, len(serverNodes), 1)[0]
