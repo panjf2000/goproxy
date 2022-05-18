@@ -1,16 +1,16 @@
 package handler
 
 import (
-	"github.com/lafikl/liblb/r2"
-	"github.com/zehuamama/balancer/balancer"
 	"math/rand"
 	"net"
 	"net/http"
 	"strconv"
 	"strings"
 
+	"github.com/lafikl/liblb/r2"
 	"github.com/panjf2000/goproxy/config"
 	"github.com/panjf2000/goproxy/tool"
+	"github.com/zehuamama/balancer/balancer"
 )
 
 var r2LB = r2.New()
