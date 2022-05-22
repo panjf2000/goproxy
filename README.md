@@ -18,7 +18,7 @@ Sometimes your program needs to call some third party API and wants to customize
 
 ## 🚀 Features：
 
-- Supporting reverse-proxy, 6 load-balancing algorithms in goproxy: Random, IP Hash, Round Robin, Weight Round Robin, Power of Two Choices (P2C), Consistent Hashing with Bounded Loads
+- Supporting reverse-proxy, 7 load-balancing algorithms in goproxy: Random, IP Hash, Round Robin, Weight Round Robin, Power of Two Choices (P2C), Consistent Hashing with Bounded Loads, Least Load
 - Supporting GET/POST/PUT/DELETE Methods in http and CONNECT method in https in goproxy
 - Supporting HTTP authentication
 - Filtering and blocking specific http requests and even rewriting them in goproxy
@@ -57,7 +57,7 @@ title = "TOML config for goproxy"
 port = ":8080"
 reverse = true
 proxy_pass = ["127.0.0.1:6000"]
-# 0 - random, 1 - loop, 2 - power of two choices(p2c), 3 - hash, 4 - consistent hashing
+# 0 - random, 1 - loop, 2 - power of two choices(p2c), 3 - hash, 4 - consistent hashing, 5 - least load
 inverse_mode = 2
 auth = false
 cache = true
